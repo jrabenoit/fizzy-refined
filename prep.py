@@ -54,7 +54,7 @@ def Misc():
     dfc=pd.concat(dflist)
 
     #Cgi ordered categories, -1 indicates NaN
-    df=df.set_index('patient')
+    df=df.set_index('PATIENT')
     cat=['Normal, not at all ill',
     'Borderline mentally ill',
     'Mildly ill',  
@@ -80,12 +80,50 @@ def Misc():
      'Asian',  
      'Black or African American',
      'Hispanic or Latino',
+     'Middle Eastern or North African',
      'Native Hawaiian or Other Pacific Islander',
      'Other',
      'White']
 
     #sex ordering- alphabetical
     sex=['Female','Male']
+
+    #ethnic recode
+    df1['ETHNIC RECODE']=df1['ETHNIC RECODE'].replace({
+ 'American Indian or Alaska Native':'American Indian or Alaska Native',
+ 'Arabic':'Middle Eastern or North African',
+ 'Asian':'Asian',
+ 'Black':'Black or African American',
+ 'Black or African American':'Black or African American',
+ 'Chinese':'Asian',
+ 'Hispanic':'Hispanic or Latino',
+ 'Indian':'Asian',
+ 'Korean':'Asian',
+ 'Native American':'American Indian or Alaska Native',
+ 'Native Hawaiian or Other Pacific Islander':'Native Hawaiian or Other Pacific Islander',
+ 'Oriental(Asian)':'Asian',
+ 'Other':'Other',
+ 'Other: (Mixed race)':'Other',
+ 'Other: Alaskan Native':'American Indian or Alaska Native',
+ 'Other: Coloured.':'Black or African American',
+ 'Other: Mid eastern':'Middle Eastern or North African',
+ 'Other: Middle eastern':'Middle Eastern or North African',
+ 'Other: Mixed':'Other',
+ 'Other: Mixed race.':'Other',
+ 'Other: Mixed.':'Other',
+ 'Other: Panaminian.':'Hispanic or Latino',
+ 'Other: Russian':'White',
+ 'Other: XXXXXXXXXX':'Other',
+ 'Other:Bi-Racial.':'Other',
+ 'Other:Brazilian':'Hispanic or Latino',
+ 'Other:Cauc/Asian-pacific islander':'Other',
+ 'Other:INDIAN':'Asian',
+ 'Other:Mixed':'Other',
+ 'Other:Mixed race.':'Other',
+ 'Other:Mixed.':'Other',
+ 'Other:Slavic':'White',
+ 'Taiwanese':'Asian',
+ 'White':'White'})
     
     return
 
