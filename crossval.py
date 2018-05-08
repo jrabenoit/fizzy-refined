@@ -7,12 +7,11 @@ from sklearn.model_selection import StratifiedKFold
 
 def OuterCv():   
     
-    data=np.loadtxt('/media/james/ext4data1/current/projects/pfizer/combined-study/data-minmax.csv', delimiter=',')
-    labels=pd.read_csv('/media/james/ext4data1/current/projects/pfizer/combined-study/labels.csv', encoding='utf-8').set_index('PATIENT')
-    
-    labels=np.array(labels['HAMD 1=REMIT'])
-        
-    #Treatment Response: 379 subjects, 200 remitters (52.77%), 179 with HAM-D > 7\n')
+    data=np.loadtxt('/media/james/ext4data1/current/projects/pfizer/refined-combined-study/Data/data.csv', delimiter=',')
+    a=input("Click and drag labels file here: ")
+    a=a.strip('\' ')
+    labels=pd.read_csv(a, encoding='utf-8').set_index('PATIENT')    
+    labels=np.array(labels[labels.columns[0]])
     
     outer_cv= {'X_train': [], 'X_test': [], 
                'y_train': [], 'y_test': [],
@@ -35,13 +34,13 @@ def OuterCv():
         outer_cv['train_indices'].append(train_index)
         outer_cv['test_indices'].append(test_index)
     
-    with open('/media/james/ext4data1/current/projects/pfizer/combined-study/ocv.pickle', 'wb') as f: pickle.dump(outer_cv, f, pickle.HIGHEST_PROTOCOL) 
+    with open('/media/james/ext4data1/current/projects/pfizer/refined-combined-study/ocv.pickle', 'wb') as f: pickle.dump(outer_cv, f, pickle.HIGHEST_PROTOCOL) 
 
     return
     
 def InnerCv():
     '''Set up as a flat structure of 25 df'''
-    with open('/media/james/ext4data1/current/projects/pfizer/combined-study/ocv.pickle', 'rb') as f: outer_cv= pickle.load(f)
+    with open('/media/james/ext4data1/current/projects/pfizer/refined-combined-study/ocv.pickle', 'rb') as f: outer_cv= pickle.load(f)
 
     inner_cv= {'X_train': [], 'X_test': [], 
                'y_train': [], 'y_test': [],
@@ -68,7 +67,7 @@ def InnerCv():
             inner_cv['train_indices'].append(train_index)
             inner_cv['test_indices'].append(test_index)
 
-    with open('/media/james/ext4data1/current/projects/pfizer/combined-study/icv.pickle', 'wb') as f: pickle.dump(inner_cv, f, pickle.HIGHEST_PROTOCOL) 
+    with open('/media/james/ext4data1/current/projects/pfizer/refined-combined-study/icv.pickle', 'wb') as f: pickle.dump(inner_cv, f, pickle.HIGHEST_PROTOCOL) 
     
     return
 

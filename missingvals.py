@@ -30,8 +30,8 @@ def Impute():
     mms= MinMaxScaler() #Gets features to a 0-1 range
     rs=RobustScaler() #Less sensitive to outliers
     
-    X= ss.fit_transform(X)
-    #X= mms.fit_transform(X)
+    #X= ss.fit_transform(X)
+    X= mms.fit_transform(X)
     
     labels=pd.read_csv('/media/james/ext4data1/current/projects/pfizer/combined-study/labels_after_dropna.csv', encoding='utf-8').set_index('PATIENT')
 

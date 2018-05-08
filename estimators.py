@@ -9,16 +9,18 @@ from sklearn import svm, naive_bayes, neighbors, ensemble, linear_model, tree, n
 #Quick note: feature_importances_ can be used with random forest etc. to generate feature importance lists
 
 def InnerFolds():
-    with open('/media/james/ext4data1/current/projects/pfizer/combined-study/icvfeats.pickle','rb') as f: icv=pickle.load(f)
-    patients= pd.read_csv('/media/james/ext4data1/current/projects/pfizer/combined-study/labels.csv', encoding='utf-8').set_index('PATIENT')
+    with open('/media/james/ext4data1/current/projects/pfizer/refined-combined-study/icvfeats.pickle','rb') as f: icv=pickle.load(f)
+    a=input('Click and drag labels file: ')
+    a=a.strip('\' ')
+    patients= pd.read_csv(a, encoding='utf-8').set_index('PATIENT')
     
     folds= len(icv['X_train'])   
     
-    rf= ensemble.RandomForestClassifier(max_features=20, max_depth=5, n_jobs=3, bootstrap=False)
-    et= ensemble.ExtraTreesClassifier(max_features=20, max_depth=5, n_jobs=3, bootstrap=False)
+    rf= ensemble.RandomForestClassifier(max_features=10, max_depth=5, n_jobs=3, bootstrap=False)
+    et= ensemble.ExtraTreesClassifier(max_features=10, max_depth=5, n_jobs=3, bootstrap=False)
     kn= neighbors.KNeighborsClassifier(n_neighbors=30, n_jobs=3, p=1)
     nb= naive_bayes.GaussianNB()
-    dt= tree.DecisionTreeClassifier(max_features=20, max_depth=5, criterion='entropy')
+    dt= tree.DecisionTreeClassifier(max_features=10, max_depth=5, criterion='entropy')
     ls= svm.LinearSVC(penalty='l1', dual=False)
     gb= ensemble.GradientBoostingClassifier(loss='exponential', max_depth=2)
     nn= neural_network.MLPClassifier(hidden_layer_sizes=(40,40,40), learning_rate_init=0.0001, max_iter=500)
@@ -27,17 +29,17 @@ def InnerFolds():
     bc= ensemble.BaggingClassifier(base_estimator=rf, n_jobs=3)
     vc= ensemble.VotingClassifier(estimators=[('rf', rf),('gb', gb),('et',et)], voting='soft')
     
-    est= {#'randomforest': rf,
-          #'extratrees': et,
-          #'kneighbors': kn,
-          #'naivebayes': nb,
-          #'decisiontree': dt,
-          #'linearsvc': ls,
-          #'gboost': gb,
+    est= {'randomforest': rf,
+          'extratrees': et,
+          'kneighbors': kn,
+          'naivebayes': nb,
+          'decisiontree': dt,
+          'linearsvc': ls,
+          'gboost': gb,
           'neuralnet': nn,
-          #'adaboost': ab,
-          #'voting': vc,
-          #'bagging': bc,
+          'adaboost': ab,
+          'voting': vc,
+          'bagging': bc,
           }
    
     train_results= {'fold':[], 'estimator':[], 'subjects':[], 

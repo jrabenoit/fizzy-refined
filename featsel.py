@@ -11,7 +11,7 @@ import numpy as np
 #Run feature selection. Data here need to be transformed because they'll be used in the ML step.
 
 def InnerFeats():
-    with open('/media/james/ext4data1/current/projects/pfizer/combined-study/icv.pickle','rb') as f: icv=pickle.load(f)       
+    with open('/media/james/ext4data1/current/projects/pfizer/refined-combined-study/icv.pickle','rb') as f: icv=pickle.load(f)       
     X_train= icv['X_train']
     X_test= icv['X_test']
     y_train= icv['y_train']
@@ -22,7 +22,7 @@ def InnerFeats():
     folds= len(icv['X_train'])
     feats=[[0]]*folds
     
-    skb= SelectKBest(k='all')
+    skb= SelectKBest(k=10)
     #doing second cut using rfecv to get correct # within skb
     #rfe= RFECV(RandomForestClassifier(), step=1, n_jobs=3)
     #llic= SelectFromModel(LassoLarsIC(criterion='bic'))
@@ -55,12 +55,12 @@ def InnerFeats():
     
     featdict={'Feature Indices':feats, 'X_train':X_train, 'X_test':X_test, 'y_train':y_train, 'y_test':y_test, 'train_indices':train_indices, 'test_indices':test_indices}
         
-    with open('/media/james/ext4data1/current/projects/pfizer/combined-study/icvfeats.pickle','wb') as f: pickle.dump(featdict, f, pickle.HIGHEST_PROTOCOL)
+    with open('/media/james/ext4data1/current/projects/pfizer/refined-combined-study/icvfeats.pickle','wb') as f: pickle.dump(featdict, f, pickle.HIGHEST_PROTOCOL)
         
     return    
 
 def OuterFeats():
-    with open('/media/james/ext4data1/current/projects/pfizer/combined-study/ocv.pickle','rb') as f: ocv=pickle.load(f)       
+    with open('/media/james/ext4data1/current/projects/pfizer/refined-combined-study/ocv.pickle','rb') as f: ocv=pickle.load(f)       
     X_train= ocv['X_train']
     X_test= ocv['X_test']
     y_train= ocv['y_train']
@@ -73,7 +73,7 @@ def OuterFeats():
     
     for i in range(folds):
         subjects=len(X_train[i])
-        skb= SelectKBest(k='all')
+        skb= SelectKBest(k=10)
         skb.fit(X_train[i], y_train[i])
         feats[i]=skb.get_support(indices=True)
         X_train_feats= skb.transform(X_train[i])
@@ -83,6 +83,6 @@ def OuterFeats():
     
     featdict={'Feature Indices':feats, 'X_train':X_train, 'X_test':X_test, 'y_train':y_train, 'y_test':y_test, 'train_indices':train_indices, 'test_indices':test_indices}
         
-    with open('/media/james/ext4data1/current/projects/pfizer/combined-study/ocvfeats.pickle','wb') as f: pickle.dump(featdict, f, pickle.HIGHEST_PROTOCOL)
+    with open('/media/james/ext4data1/current/projects/pfizer/refined-combined-study/ocvfeats.pickle','wb') as f: pickle.dump(featdict, f, pickle.HIGHEST_PROTOCOL)
         
     return
