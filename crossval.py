@@ -6,11 +6,12 @@ import pandas as pd
 from sklearn.model_selection import StratifiedKFold
 
 def OuterCv():   
-    
-    data=np.loadtxt('/media/james/ext4data1/current/projects/pfizer/refined-combined-study/Data/data.csv', delimiter=',')
-    a=input("Click and drag labels file here: ")
+    a=input('Click and drag data file here: ')
     a=a.strip('\' ')
-    labels=pd.read_csv(a, encoding='utf-8').set_index('PATIENT')    
+    data=np.loadtxt(a, delimiter=',')
+    b=input('Click and drag labels file here: ')
+    b=b.strip('\' ')
+    labels=pd.read_csv(b, encoding='utf-8').set_index('PATIENT')    
     labels=np.array(labels[labels.columns[0]])
     
     outer_cv= {'X_train': [], 'X_test': [], 

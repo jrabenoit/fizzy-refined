@@ -10,12 +10,14 @@ from sklearn import svm, naive_bayes, neighbors, ensemble, linear_model, tree, n
 
 def InnerFolds():
     with open('/media/james/ext4data1/current/projects/pfizer/refined-combined-study/icvfeats.pickle','rb') as f: icv=pickle.load(f)
-    a=input('Click and drag labels file: ')
-    a=a.strip('\' ')
+    #a=input('Click and drag labels file: ')
+    #a=a.strip('\' ')
+    a='/media/james/ext4data1/current/projects/pfizer/refined-combined-study/Data/labels-20-balanced.csv'
     patients= pd.read_csv(a, encoding='utf-8').set_index('PATIENT')
     
     folds= len(icv['X_train'])   
-    
+
+    #max_features=10 for rf, et, dt
     rf= ensemble.RandomForestClassifier(max_features=10, max_depth=5, n_jobs=3, bootstrap=False)
     et= ensemble.ExtraTreesClassifier(max_features=10, max_depth=5, n_jobs=3, bootstrap=False)
     kn= neighbors.KNeighborsClassifier(n_neighbors=30, n_jobs=3, p=1)
@@ -23,11 +25,11 @@ def InnerFolds():
     dt= tree.DecisionTreeClassifier(max_features=10, max_depth=5, criterion='entropy')
     ls= svm.LinearSVC(penalty='l1', dual=False)
     gb= ensemble.GradientBoostingClassifier(loss='exponential', max_depth=2)
-    nn= neural_network.MLPClassifier(hidden_layer_sizes=(40,40,40), learning_rate_init=0.0001, max_iter=500)
+    nn= neural_network.MLPClassifier(hidden_layer_sizes=(65,65,65), learning_rate_init=0.0001, max_iter=500)
     
     ab= ensemble.AdaBoostClassifier()
     bc= ensemble.BaggingClassifier(base_estimator=rf, n_jobs=3)
-    vc= ensemble.VotingClassifier(estimators=[('rf', rf),('gb', gb),('et',et)], voting='soft')
+    vc= ensemble.VotingClassifier(estimators=[('gb', gb),('kn', kn),('bc',bc)], voting='soft')
     
     est= {'randomforest': rf,
           'extratrees': et,
@@ -87,8 +89,8 @@ def InnerFolds():
     train_df=pd.DataFrame.from_dict(train_results).set_index('subjects')
     test_df=pd.DataFrame.from_dict(test_results).set_index('subjects')
     
-    train_df.to_csv(path_or_buf='/media/james/ext4data1/current/projects/pfizer/combined-study/inner_train_results.csv')
-    test_df.to_csv(path_or_buf='/media/james/ext4data1/current/projects/pfizer/combined-study/inner_test_results.csv')
+    train_df.to_csv(path_or_buf='/media/james/ext4data1/current/projects/pfizer/refined-combined-study/inner_train_results.csv')
+    test_df.to_csv(path_or_buf='/media/james/ext4data1/current/projects/pfizer/refined-combined-study/inner_test_results.csv')
     
     trd= train_df.groupby('estimator').sum()
     trsum= (trd['scores']/trd['attempts'])*100
@@ -105,9 +107,12 @@ def InnerFolds():
     return
 
 def OuterFolds():
-    with open('/media/james/ext4data1/current/projects/pfizer/combined-study/ocvfeats.pickle','rb') as f: ocv=pickle.load(f)
-    patients= pd.read_csv('/media/james/ext4data1/current/projects/pfizer/combined-study/labels.csv', encoding='utf-8').set_index('PATIENT')
-    
+    with open('/media/james/ext4data1/current/projects/pfizer/refined-combined-study/ocvfeats.pickle','rb') as f: ocv=pickle.load(f)
+    #a=input('Click and drag labels file: ')
+    #a=a.strip('\' ')
+    a='/media/james/ext4data1/current/projects/pfizer/refined-combined-study/Data/labels-20-balanced.csv'
+    patients= pd.read_csv(a, encoding='utf-8').set_index('PATIENT')
+        
     folds= len(ocv['X_train'])
 
     rf= ensemble.RandomForestClassifier(max_features=20, max_depth=5, n_jobs=3, bootstrap=False)
@@ -131,8 +136,8 @@ def OuterFolds():
           #'linearsvm': ls,
           #'adaboost': ab
           #'neuralnet': nn,
-          #'voting': vc
-          'bagging': bc
+          'voting': vc
+          #'bagging': bc
           #'gboost': gb
           }
    
@@ -180,8 +185,8 @@ def OuterFolds():
     train_df=pd.DataFrame.from_dict(train_results).set_index('subjects')
     test_df=pd.DataFrame.from_dict(test_results).set_index('subjects')
     
-    train_df.to_csv(path_or_buf='/media/james/ext4data1/current/projects/pfizer/combined-study/outer_train_results.csv')
-    test_df.to_csv(path_or_buf='/media/james/ext4data1/current/projects/pfizer/combined-study/outer_test_results.csv')
+    train_df.to_csv(path_or_buf='/media/james/ext4data1/current/projects/pfizer/refined-combined-study/outer_train_results.csv')
+    test_df.to_csv(path_or_buf='/media/james/ext4data1/current/projects/pfizer/refined-combined-study/outer_test_results.csv')
 
     trd= train_df.groupby('estimator').sum()
     trsum= (trd['scores']/trd['attempts'])*100

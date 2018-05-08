@@ -46,12 +46,18 @@ def Misc():
     df['Severity of illness']=df['Severity of illness'].replace(to_replace='Borderline ill', value='Borderline mentally ill')
 
     #Quick way to sample a class to even out classes
-    df['HAMD 1=REMIT'].value_counts()
-    df0=df.loc[df['HAMD 1=REMIT']==0]
-    df1=df.loc[df['HAMD 1=REMIT']==1]
-    dfs=df0.sample(n=1018) 
-    dflist=[df1, dfs] 
-    dfc=pd.concat(dflist)
+    a='20% response'
+    b=df1[a].value_counts()
+    df2=df1.loc[df1[a]==0]
+    df3=df1.loc[df1[a]==1]
+    df4=df2.sample(min(b))
+    df5=df3.sample(min(b))
+    df6=[df4, df5] 
+    df7=pd.concat(df6)
+    df8=df7.sort_index()
+
+    #Sampling from data to get the same subjects as labels
+    
 
     #Cgi ordered categories, -1 indicates NaN
     df=df.set_index('PATIENT')

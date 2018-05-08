@@ -22,10 +22,10 @@ def InnerFeats():
     folds= len(icv['X_train'])
     feats=[[0]]*folds
     
-    skb= SelectKBest(k=10)
+    skb= SelectKBest(k='all')
     #doing second cut using rfecv to get correct # within skb
-    #rfe= RFECV(RandomForestClassifier(), step=1, n_jobs=3)
-    #llic= SelectFromModel(LassoLarsIC(criterion='bic'))
+    rfe= RFECV(RandomForestClassifier(), step=1, n_jobs=3)
+    #llic= SelectFromModel(LassoLarsIC())
     
     #LOOK HERE
     #COUPLE MORE THINGS TO TRY
@@ -38,20 +38,21 @@ def InnerFeats():
         X_test_skb= skb.transform(X_test[i])
 
         #RFECV option
-        #rfe.fit(X_train_skb, y_train[i])
-        #feats[i]=rfe.get_support(indices=True)
-        #X_train_feats= rfe.transform(X_train_skb)
-        #X_test_feats= rfe.transform(X_test_skb)
+        rfe.fit(X_train_skb, y_train[i])
+        feats[i]=rfe.get_support(indices=True)
+        X_train_feats= rfe.transform(X_train_skb)
+        X_test_feats= rfe.transform(X_test_skb)
 
         #LassoLarsIC option
+        
         #llic.fit(X_train_skb, y_train[i])
         #X_train_feats= llic.transform(X_train_skb)
         #X_test_feats= llic.transform(X_test_skb)
         
-        X_train[i]= np.array(X_train_skb)
-        X_test[i]= np.array(X_test_skb)
-        #X_train[i]= np.array(X_train_feats)
-        #X_test[i]= np.array(X_test_feats)
+        #X_train[i]= np.array(X_train_skb)
+        #X_test[i]= np.array(X_test_skb)
+        X_train[i]= np.array(X_train_feats)
+        X_test[i]= np.array(X_test_feats)
     
     featdict={'Feature Indices':feats, 'X_train':X_train, 'X_test':X_test, 'y_train':y_train, 'y_test':y_test, 'train_indices':train_indices, 'test_indices':test_indices}
         
@@ -73,11 +74,11 @@ def OuterFeats():
     
     for i in range(folds):
         subjects=len(X_train[i])
-        skb= SelectKBest(k=10)
-        skb.fit(X_train[i], y_train[i])
-        feats[i]=skb.get_support(indices=True)
-        X_train_feats= skb.transform(X_train[i])
-        X_test_feats= skb.transform(X_test[i])
+        rfe= RFECV(RandomForestClassifier(), step=1, n_jobs=3)
+        rfe.fit(X_train[i], y_train[i])
+        feats[i]=rfe.get_support(indices=True)
+        X_train_feats= rfe.transform(X_train[i])
+        X_test_feats= rfe.transform(X_test[i])
         X_train[i]= np.array(X_train_feats)
         X_test[i]= np.array(X_test_feats)
     
