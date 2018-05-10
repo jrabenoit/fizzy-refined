@@ -31,7 +31,7 @@ def Impute():
     rs=RobustScaler() #Less sensitive to outliers
     
     #X= ss.fit_transform(X)
-    X= mms.fit_transform(X)
+    X2= mms.fit_transform(X)
     
     labels=pd.read_csv('/media/james/ext4data1/current/projects/pfizer/combined-study/labels_after_dropna.csv', encoding='utf-8').set_index('PATIENT')
 
@@ -42,6 +42,6 @@ def Impute():
     #str((np.count_nonzero(X)/(X.shape[0]*X.shape[1]))*100) to get density... 96% sparse 
     #Should return to the psych scales (madrs, hamd etc) and encode using OneHotEncoder, since continuous variables are expected.
     
-    np.savetxt('/media/james/ext4data1/current/projects/pfizer/combined-study/data.csv', X, delimiter=',')
+    np.savetxt('/media/james/ext4data1/current/projects/pfizer/refined-combined-study/data.csv', X2, delimiter=',')
     
     return
