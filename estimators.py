@@ -10,15 +10,15 @@ from sklearn import svm, naive_bayes, neighbors, ensemble, linear_model, tree, n
 
 def InnerFolds():
     with open('/media/james/ext4data1/current/projects/pfizer/refined-combined-study/icvfeats.pickle','rb') as f: icv=pickle.load(f)
-    #a=input('Click and drag labels file: ')
-    #a=a.strip('\' ')
-    a='/media/james/ext4data1/current/projects/pfizer/refined-combined-study/Data/labels-20-balanced.csv'
+    a=input('Click and drag labels file: ')
+    a=a.strip('\' ')
+    #a='/media/james/ext4data1/current/projects/pfizer/refined-combined-study/Data/labels.csv'
     patients= pd.read_csv(a, encoding='utf-8').set_index('PATIENT')
     
     folds= len(icv['X_train'])   
 
     #max_features=10 for rf, et, dt
-    rf= ensemble.RandomForestClassifier(max_features=10, max_depth=5, n_jobs=3, bootstrap=False)
+    rf= ensemble.RandomForestClassifier(max_features=20, max_depth=5, n_jobs=3, bootstrap=False)
     et= ensemble.ExtraTreesClassifier(max_features=10, max_depth=5, n_jobs=3, bootstrap=False)
     kn= neighbors.KNeighborsClassifier(n_neighbors=30, n_jobs=3, p=1)
     nb= naive_bayes.GaussianNB()
@@ -31,16 +31,16 @@ def InnerFolds():
     bc= ensemble.BaggingClassifier(base_estimator=rf, n_jobs=3)
     vc= ensemble.VotingClassifier(estimators=[('gb', gb),('kn', kn),('bc',bc)], voting='soft')
     
-    est= {'randomforest': rf,
-          'extratrees': et,
-          'kneighbors': kn,
-          'naivebayes': nb,
-          'decisiontree': dt,
-          'linearsvc': ls,
-          'gboost': gb,
-          'neuralnet': nn,
-          'adaboost': ab,
-          'voting': vc,
+    est= {#'randomforest': rf,
+          #'extratrees': et,
+          #'kneighbors': kn,
+          #'naivebayes': nb,
+          #'decisiontree': dt,
+          #'linearsvc': ls,
+          #'gboost': gb,
+          #'neuralnet': nn,
+          #'adaboost': ab,
+          #'voting': vc,
           'bagging': bc,
           }
    

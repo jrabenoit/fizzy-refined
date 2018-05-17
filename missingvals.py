@@ -17,13 +17,14 @@ def Impute():
     info=pd.read_csv('/media/james/ext4data1/current/projects/pfizer/combined-study/input_data_after_dropna.csv', encoding='utf-8').set_index('PATIENT')
     
     #first, remove columns with NaN values
-    info= info.dropna(axis='columns')
+    info= info.dropna(axis='columns', how='all')
     
     #tested axes- we want axis 0 to impute down a column
     #Using mode because of sparsity- if 99% of values are 0, most likely that this will be a 0 too.
-    imp = Imputer() #defaults are fine
-    X= imp.fit_transform(info)
-    
+    X= Imputer().fit_transform(info)
+    #Can use median imputation to protect against long tail features
+    X= Imputer(strategy='median', axis=0).fit_transform(df2)
+
     #using a sparse data scaler due to the number of zeros from binarized variables
     ss= StandardScaler()
     mas= MaxAbsScaler()

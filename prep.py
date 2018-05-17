@@ -46,7 +46,7 @@ def Misc():
     df['Severity of illness']=df['Severity of illness'].replace(to_replace='Borderline ill', value='Borderline mentally ill')
 
     #Quick way to sample a class to even out classes
-    a='20% response'
+    a=df1.columns[0]
     b=df1[a].value_counts()
     df2=df1.loc[df1[a]==0]
     df3=df1.loc[df1[a]==1]
