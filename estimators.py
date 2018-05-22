@@ -198,7 +198,8 @@ def OuterFolds():
     return
     
 def HoldoutFolds():
-    with open('/media/james/ext4data1/current/projects/pfizer/combined-study/holdoutocvfeats.pickle','rb') as f: ocv=pickle.load(f)
+    with open('/media/james/ext4data1/current/projects/pfizer/combined-study/ocvfeats.pickle','rb') as f: ocv=pickle.load(f)
+    with open('/media/james/ext4data1/current/projects/pfizer/combined-study/holdoutocvfeats.pickle','rb') as f: holdoutocv=pickle.load(f)
     a=input('Click and drag labels file: ')
     a=a.strip('\' ')
     patients= pd.read_csv(a, encoding='utf-8').set_index('PATIENT')
@@ -243,25 +244,13 @@ def HoldoutFolds():
     
     for i in range(folds):
         X_train= ocv['X_train'][i]
-        X_test= ocv['X_test'][i]
+        X_test= holdoutocv['X_test'][i]
         y_train= ocv['y_train'][i]
-        y_test= ocv['y_test'][i]        
-        train_ids= patients.index[ocv['train_indices'][i]]
-        test_ids= patients.index[ocv['test_indices'][i]]
+        y_test= holdoutocv['y_test'][i]        
+        test_ids= patients.index[holdoutocv['test_indices'][i]]
         
         for j,k in zip(est.keys(), est.values()):
             k.fit(X_train, y_train)
-            
-            predict_train= k.predict(X_train)
-            train_scores= [1 if x==y else 0 for x,y in zip(y_train, predict_train)]            
-            train_results['fold'].extend([i+1]*len(X_train))
-            train_results['estimator'].extend([j]*len(X_train))
-            train_results['subjects'].extend(train_ids)
-            train_results['labels'].extend(y_train)
-            train_results['predictions'].extend(predict_train)
-            train_results['scores'].extend(train_scores)
-            train_results['attempts'].extend([1]*len(X_train))
-
             predict_test= k.predict(X_test)
             test_scores= [1 if x==y else 0 for x,y in zip(y_test, predict_test)]         
             test_results['fold'].extend([i+1]*len(X_test))
@@ -272,17 +261,9 @@ def HoldoutFolds():
             test_results['scores'].extend(test_scores)
             test_results['attempts'].extend([1]*len(X_test))
 
-    train_df=pd.DataFrame.from_dict(train_results).set_index('subjects')
-    test_df=pd.DataFrame.from_dict(test_results).set_index('subjects')
-    
-    train_df.to_csv(path_or_buf='/media/james/ext4data1/current/projects/pfizer/combined-study/outer_train_results.csv')
-    test_df.to_csv(path_or_buf='/media/james/ext4data1/current/projects/pfizer/combined-study/outer_test_results.csv')
+    test_df=pd.DataFrame.from_dict(test_results).set_index('subjects')  
 
-    trd= train_df.groupby('estimator').sum()
-    trsum= (trd['scores']/trd['attempts'])*100
-    print(trsum)
-    pmax= trsum.idxmax(axis=1)
-    print('\nBest train: {}\n'.format(pmax))
+    test_df.to_csv(path_or_buf='/media/james/ext4data1/current/projects/pfizer/combined-study/outer_test_results.csv')
 
     ted= test_df.groupby('estimator').sum()
     tesum= (ted['scores']/ted['attempts'])*100
