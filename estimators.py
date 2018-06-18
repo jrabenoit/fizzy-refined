@@ -27,16 +27,16 @@ def InnerFolds():
     bc= ensemble.BaggingClassifier(base_estimator=rf, n_jobs=3)
     vc= ensemble.VotingClassifier(estimators=[('gb', gb),('kn', kn),('bc',bc)], voting='soft')
     
-    est= {#'randomforest': rf,
-          #'extratrees': et,
-          #'kneighbors': kn,
-          #'naivebayes': nb,
-          #'decisiontree': dt,
-          #'linearsvc': ls,
-          #'gboost': gb,
-          #'neuralnet': nn,
-          #'adaboost': ab,
-          #'voting': vc,
+    est= {'randomforest': rf,
+          'extratrees': et,
+          'kneighbors': kn,
+          'naivebayes': nb,
+          'decisiontree': dt,
+          'linearsvc': ls,
+          'gboost': gb,
+          'neuralnet': nn,
+          'adaboost': ab,
+          'voting': vc,
           'bagging': bc,
           }
    
@@ -227,9 +227,9 @@ def HoldoutFolds():
           #'linearsvm': ls,
           #'adaboost': ab
           #'neuralnet': nn,
-          'voting': vc
+          #'voting': vc
           #'bagging': bc
-          #'gboost': gb
+          'gboost': gb
           }
    
     train_results= {'fold':[], 'estimator':[], 'subjects':[], 
@@ -244,9 +244,11 @@ def HoldoutFolds():
     
     for i in range(folds):
         X_train= ocv['X_train'][i]
-        X_test= holdoutocv['X_test'][i]
         y_train= ocv['y_train'][i]
+        
+        X_test= holdoutocv['X_test'][i]
         y_test= holdoutocv['y_test'][i]        
+        
         test_ids= patients.index[holdoutocv['test_indices'][i]]
         
         for j,k in zip(est.keys(), est.values()):
@@ -263,7 +265,7 @@ def HoldoutFolds():
 
     test_df=pd.DataFrame.from_dict(test_results).set_index('subjects')  
 
-    test_df.to_csv(path_or_buf='/media/james/ext4data1/current/projects/pfizer/combined-study/outer_test_results.csv')
+    test_df.to_csv(path_or_buf='/media/james/ext4data1/current/projects/pfizer/combined-study/holdout_test_results.csv')
 
     ted= test_df.groupby('estimator').sum()
     tesum= (ted['scores']/ted['attempts'])*100

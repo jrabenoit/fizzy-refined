@@ -9,7 +9,9 @@ import pprint, itertools, pickle, random, statistics
 #Because we are sampling with replacement, we don't need to worry about the program picking all subjects each time... some may be picked more than once, and the total number of samples will be equal to the number of subjects.
 
 def Bill():
-    otr=pd.read_csv('/media/james/ext4data1/current/projects/pfizer/refined-combined-study/outer_test_results.csv').set_index('subjects')
+    a=input('Click and drag desired test results file (usually outer_test_results or holdout_test_results: ')
+    a=a.strip('\' ')
+    otr=pd.read_csv(a).set_index('subjects')
     
     #Per subject accuracy  
     acc= otr['scores']*100
