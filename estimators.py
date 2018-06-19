@@ -14,18 +14,17 @@ def InnerFolds():
     folds= len(icv['X_train'])   
 
     #max_features=10 for rf, et, dt
-    rf= ensemble.RandomForestClassifier(max_features=20, max_depth=5, n_jobs=3, bootstrap=False)
+    rf= ensemble.RandomForestClassifier(max_features=10, max_depth=5, n_jobs=3, bootstrap=False)
     et= ensemble.ExtraTreesClassifier(max_features=10, max_depth=5, n_jobs=3, bootstrap=False)
-    kn= neighbors.KNeighborsClassifier(n_neighbors=30, n_jobs=3, p=1)
+    kn= neighbors.KNeighborsClassifier(n_neighbors=10, n_jobs=3, p=1)
     nb= naive_bayes.GaussianNB()
     dt= tree.DecisionTreeClassifier(max_features=10, max_depth=5, criterion='entropy')
     ls= svm.LinearSVC(penalty='l1', dual=False)
     gb= ensemble.GradientBoostingClassifier(loss='exponential', max_depth=2)
-    nn= neural_network.MLPClassifier(hidden_layer_sizes=(65,65,65), learning_rate_init=0.0001, max_iter=500)
-    
+    nn= neural_network.MLPClassifier(hidden_layer_sizes=(7,7,7), learning_rate_init=0.0001, max_iter=500)
     ab= ensemble.AdaBoostClassifier()
     bc= ensemble.BaggingClassifier(base_estimator=rf, n_jobs=3)
-    vc= ensemble.VotingClassifier(estimators=[('gb', gb),('kn', kn),('bc',bc)], voting='soft')
+    vc= ensemble.VotingClassifier(estimators=[('ab', ab),('gb', gb),('bc', bc)], voting='soft')
     
     est= {'randomforest': rf,
           'extratrees': et,
@@ -110,18 +109,17 @@ def OuterFolds():
         
     folds= len(ocv['X_train'])
 
-    rf= ensemble.RandomForestClassifier(max_features=20, max_depth=5, n_jobs=3, bootstrap=False)
-    et= ensemble.ExtraTreesClassifier(max_features=20, max_depth=5, n_jobs=3, bootstrap=False)
-    kn= neighbors.KNeighborsClassifier(n_neighbors=30, n_jobs=3, p=1)
+    rf= ensemble.RandomForestClassifier(max_features=10, max_depth=5, n_jobs=3, bootstrap=False)
+    et= ensemble.ExtraTreesClassifier(max_features=10, max_depth=5, n_jobs=3, bootstrap=False)
+    kn= neighbors.KNeighborsClassifier(n_neighbors=10, n_jobs=3, p=1)
     nb= naive_bayes.GaussianNB()
-    dt= tree.DecisionTreeClassifier(max_features=20, max_depth=5, criterion='entropy')
+    dt= tree.DecisionTreeClassifier(max_features=10, max_depth=5, criterion='entropy')
     ls= svm.LinearSVC(penalty='l1', dual=False)
     gb= ensemble.GradientBoostingClassifier(loss='exponential', max_depth=2)
-    nn= neural_network.MLPClassifier(learning_rate_init=0.0001, max_iter=500)
-    
+    nn= neural_network.MLPClassifier(hidden_layer_sizes=(7,7,7), learning_rate_init=0.0001, max_iter=500)
     ab= ensemble.AdaBoostClassifier()
-    vc= ensemble.VotingClassifier(estimators=[('rf', rf),('gb', gb),('et', et)], voting='soft', n_jobs=3)
     bc= ensemble.BaggingClassifier(base_estimator=rf, n_jobs=3)
+    vc= ensemble.VotingClassifier(estimators=[('ab', ab),('gb', gb),('bc', bc)], voting='soft')
     
     est= {#'randomforest': rf,
           #'extratrees': et,
@@ -206,17 +204,20 @@ def HoldoutFolds():
         
     folds= len(ocv['X_train'])
 
-    rf= ensemble.RandomForestClassifier(max_features=20, max_depth=5, n_jobs=3, bootstrap=False)
-    et= ensemble.ExtraTreesClassifier(max_features=20, max_depth=5, n_jobs=3, bootstrap=False)
-    kn= neighbors.KNeighborsClassifier(n_neighbors=30, n_jobs=3, p=1)
+    rf= ensemble.RandomForestClassifier(max_features=10, max_depth=5, n_jobs=3, bootstrap=False)
+    et= ensemble.ExtraTreesClassifier(max_features=10, max_depth=5, n_jobs=3, bootstrap=False)
+    kn= neighbors.KNeighborsClassifier(n_neighbors=10, n_jobs=3, p=1)
     nb= naive_bayes.GaussianNB()
-    dt= tree.DecisionTreeClassifier(max_features=20, max_depth=5, criterion='entropy')
+    dt= tree.DecisionTreeClassifier(max_features=10, max_depth=5, criterion='entropy')
     ls= svm.LinearSVC(penalty='l1', dual=False)
     gb= ensemble.GradientBoostingClassifier(loss='exponential', max_depth=2)
-    nn= neural_network.MLPClassifier(learning_rate_init=0.0001, max_iter=500)
+    nn= neural_network.MLPClassifier(hidden_layer_sizes=(7,7,7), learning_rate_init=0.0001, max_iter=500)
+    ab= ensemble.AdaBoostClassifier()
+    bc= ensemble.BaggingClassifier(base_estimator=rf, n_jobs=3)
+    vc= ensemble.VotingClassifier(estimators=[('gb', gb),('kn', kn),('bc',bc)], voting='soft')
     
     ab= ensemble.AdaBoostClassifier()
-    vc= ensemble.VotingClassifier(estimators=[('rf', rf),('gb', gb),('et', et)], voting='soft', n_jobs=3)
+    vc= ensemble.VotingClassifier(estimators=[('ab', ab),('gb', gb),('bc', bc)], voting='soft')
     bc= ensemble.BaggingClassifier(base_estimator=rf, n_jobs=3)
     
     est= {#'randomforest': rf,
@@ -227,9 +228,9 @@ def HoldoutFolds():
           #'linearsvm': ls,
           #'adaboost': ab
           #'neuralnet': nn,
-          #'voting': vc
+          'voting': vc
           #'bagging': bc
-          'gboost': gb
+          #'gboost': gb
           }
    
     train_results= {'fold':[], 'estimator':[], 'subjects':[], 
