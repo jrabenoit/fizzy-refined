@@ -72,7 +72,7 @@ def InnerCv():
     
     return
 
-def HoldoutOuterCv():   
+def HoldoutCv():   
     a=input('Click and drag holdout data file here: ')
     a=a.strip('\' ')
     data=np.loadtxt(a, delimiter=',')
