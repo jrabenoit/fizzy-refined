@@ -14,8 +14,7 @@ import numpy as np
     #from collections import Counter
     #b=dict(Counter(a))
 
-
-def InnerFeats():
+def Selector():
     with open('/media/james/ext4data1/current/projects/pfizer/combined-study/icv.pickle','rb') as f: icv=pickle.load(f)       
     X_train= icv['X_train']
     X_test= icv['X_test']

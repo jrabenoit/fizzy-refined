@@ -74,6 +74,17 @@ def Misc():
     >>>output: 89CHQS
     df=df.drop(['89CHQS'])
     
+    #CGI process
+    info=pd.read_csv('/media/james/ext4data1/current/projects/pfizer/combined-study/3151a1-3364-csv/deid_cgi.csv', encoding='utf-8') 
+
+    info=info[info['CPENM']=='BASELINE DAY -1'] 
+
+    info=info.drop_duplicates(subset='PATIENT', keep='first')   
+
+    data= info.pivot(index='PATIENT',columns='TESTS',values='VALX') 
+
+    data.to_csv(path_or_buf='/media/james/ext4data1/current/projects/pfizer/combined-study/3151a1-3364-csv/deid_cgi_ready.csv',index_label='PATIENT')  
+    
     #demow ordered sex/race
     cat=['Male', 'Female']
     
