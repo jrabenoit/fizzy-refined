@@ -19,6 +19,10 @@ def Impute():
     #first, remove columns with NaN values
     info= info.dropna(axis='columns', how='all')
     
+    #to get specific dataset:
+    del labels['HAMD 1=REMIT'] 
+    info=labels.join(info)
+    
     #tested axes- we want axis 0 to impute down a column
     #Using mode because of sparsity- if 99% of values are 0, most likely that this will be a 0 too.
     X= Imputer().fit_transform(info)
@@ -30,9 +34,9 @@ def Impute():
     mas= MaxAbsScaler()
     mms= MinMaxScaler() #Gets features to a 0-1 range
     rs=RobustScaler() #Less sensitive to outliers
-    
-    #X= ss.fit_transform(X)
+
     X2= mms.fit_transform(X)
+    X3=pd.DataFrame(data=X2, columns=data.columns, index=data.index)
     
     labels=pd.read_csv('/media/james/ext4data1/current/projects/pfizer/combined-study/labels_after_dropna.csv', encoding='utf-8').set_index('PATIENT')
 
@@ -43,6 +47,7 @@ def Impute():
     #str((np.count_nonzero(X)/(X.shape[0]*X.shape[1]))*100) to get density... 96% sparse 
     #Should return to the psych scales (madrs, hamd etc) and encode using OneHotEncoder, since continuous variables are expected.
     
-    np.savetxt('/media/james/ext4data1/current/projects/pfizer/refined-combined-study/data.csv', X2, delimiter=',')
+    #np.savetxt('/media/james/ext4data1/current/projects/pfizer/refined-combined-study/data.csv', X2, delimiter=',')
+    X3.to_csv(path_or_buf='/media/james/ext4data1/current/projects/pfizer/combined-study/data.csv', index_label='PATIENT')
     
     return

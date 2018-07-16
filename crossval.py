@@ -8,32 +8,34 @@ from sklearn.model_selection import StratifiedKFold
 def OuterCv():   
     a=input('Click and drag data file here: ')
     a=a.strip('\' ')
-    data=np.loadtxt(a, delimiter=',')
+    data=pd.read_csv(a, encoding='utf-8').set_index('PATIENT') 
+    
     b=input('Click and drag labels file here: ')
     b=b.strip('\' ')
     labels=pd.read_csv(b, encoding='utf-8').set_index('PATIENT')    
-    labels=np.array(labels[labels.columns[0]])
     
-    outer_cv= {'X_train': [], 'X_test': [], 
-               'y_train': [], 'y_test': [],
-               'train_indices': [], 'test_indices':[]}
-
     X= data
-    y= labels
+    y= labels #np.array(labels[labels.columns[0]])
     
-    X_train, X_test, y_train, y_test= [], [], [], []      
-
+    outer_cv= {'X_train': [], 'X_test': [], 'y_train': [], 'y_test': []}
+    X_train, X_test, y_train, y_test= [], [], [], []  
+    
     skf = StratifiedKFold(n_splits=5)
     for train_index, test_index in skf.split(X,y):
-        X_train, X_test= X[train_index], X[test_index]
-        y_train, y_test= y[train_index], y[test_index]       
+        outer_cv['X_train'].append(X.index[train_index])
+        outer_cv['X_test'].append(X.index[test_index])
+        outer_cv['y_train'].append(y.index[train_index])
+        outer_cv['y_test'].append(y.index[test_index])
         
-        outer_cv['X_train'].append(X_train)
-        outer_cv['X_test'].append(X_test)
-        outer_cv['y_train'].append(y_train)
-        outer_cv['y_test'].append(y_test)
-        outer_cv['train_indices'].append(train_index)
-        outer_cv['test_indices'].append(test_index)
+        #X_train, X_test= X.index[train_index], X.index[test_index]
+        #y_train, y_test= y.index[train_index], y.index[test_index]       
+        
+        #outer_cv['X_train'].append(X_train)
+        #outer_cv['X_test'].append(X_test)
+        #outer_cv['y_train'].append(y_train)
+        #outer_cv['y_test'].append(y_test)
+    
+    #with open('/media/james/ext4data1/current/projects/pfizer/combined-study/ocv.pickle', 'wb') as f: pickle.dump(outer_cv, f, pickle.HIGHEST_PROTOCOL) 
     
     with open('/media/james/ext4data1/current/projects/pfizer/combined-study/ocv.pickle', 'wb') as f: pickle.dump(outer_cv, f, pickle.HIGHEST_PROTOCOL) 
 

@@ -7,6 +7,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LassoLarsIC
 import copy, pickle
 import numpy as np
+import pandas as pd
 
 #Run feature selection. Data here need to be transformed because they'll be used in the ML step.
 #To flatten feature list and get frequencies: 
@@ -60,19 +61,32 @@ def InnerFeats():
     return    
 
 def OuterFeats():
+    a=input('Click and drag data file here: ')
+    a=a.strip('\' ')
+    data=pd.read_csv(a, encoding='utf-8').set_index('PATIENT') 
+    
+    b=input('Click and drag labels file here: ')
+    b=b.strip('\' ')
+    labels=pd.read_csv(b, encoding='utf-8').set_index('PATIENT') 
+    
     with open('/media/james/ext4data1/current/projects/pfizer/combined-study/ocv.pickle','rb') as f: ocv=pickle.load(f)       
-    X_train= ocv['X_train']
-    X_test= ocv['X_test']
-    y_train= ocv['y_train']
-    y_test= ocv['y_test']
-    train_indices= ocv['train_indices']
-    test_indices= ocv['test_indices']
+    
+    #X_train= ocv['X_train']
+    #X_test= ocv['X_test']
+    #y_train= ocv['y_train']
+    #y_test= ocv['y_test']
     
     folds= len(ocv['X_train'])
     feats=[[0]]*folds
     
     for i in range(folds):
-        subjects=len(X_train[i])
+        subjects=pd.DataFrame(index=ocv['X_train'][i])
+        X_train= subjects.join(data)
+        y_train= subjects.join(labels)
+
+        llic= SelectFromModel(LassoLarsIC(criterion='bic'))
+        llic.fit(X_train, y_train)
+        feats[i]=llic.get_support(indices=True)
         
         #skb= SelectKBest(k='all')
         #skb.fit(X_train[i], y_train[i])
@@ -80,22 +94,43 @@ def OuterFeats():
         #X_train_feats= skb.transform(X_train[i])
         #X_test_feats= skb.transform(X_test[i])
         
-        llic= SelectFromModel(LassoLarsIC(criterion='bic'))
-        llic.fit(X_train[i], y_train[i])
-        feats[i]=llic.get_support(indices=True)
-        X_train_feats= llic.transform(X_train[i])
-        X_test_feats= llic.transform(X_test[i])
+        #llic= SelectFromModel(LassoLarsIC(criterion='bic'))
+        #llic.fit(X_train[i], y_train[i])
+        #feats[i]=llic.get_support(indices=True)
+        #X_train_feats= llic.transform(X_train[i])
+        #X_test_feats= llic.transform(X_test[i])
         
-        X_train[i]= np.array(X_train_feats)
-        X_test[i]= np.array(X_test_feats)
+        #X_train[i]= np.array(X_train_feats)
+        #X_test[i]= np.array(X_test_feats)
     
-    list(set.intersection(*map(set,feats)))
+    featlist= list(set.intersection(*map(set,feats)))
+    featlist.sort()
+    feature_csv= pd.DataFrame(index=featlist, data= list(data.columns[featlist]))
+    feature_csv.index.name='Feature #'
+    feature_csv.columns=['Feature Name']
+
+    print(len(featlist))
     
+    data_cut= data[data.columns[featlist]]
     
-    featdict={'Feature Indices':feats, 'X_train':X_train, 'X_test':X_test, 'y_train':y_train, 'y_test':y_test, 'train_indices':train_indices, 'test_indices':test_indices}
+    #for i in range(folds):
+    #    X_train_feats= X_train[i]
+    #    X_test_feats= llic.transform(X_test[i])
         
-    with open('/media/james/ext4data1/current/projects/pfizer/combined-study/ocvfeats.pickle','wb') as f: pickle.dump(featdict, f, pickle.HIGHEST_PROTOCOL)
+    #    X_train[i]= np.array(X_train_feats)
+    #    X_test[i]= np.array(X_test_feats)
+    
+    #featdict={'Feature Indices':feats, 
+    #          'X_train':X_train, 
+    #          'X_test':X_test, 
+    #          'y_train':y_train, 
+    #          'y_test':y_test}
         
+    #with open('/media/james/ext4data1/current/projects/pfizer/combined-study/ocvfeats.pickle','wb') as f: pickle.dump(featdict, f, pickle.HIGHEST_PROTOCOL)
+     
+    data_cut.to_csv(path_or_buf='/media/james/ext4data1/current/projects/pfizer/combined-study/data-cut-to-feature-set.csv', index_label='PATIENT')
+    feature_csv.to_csv(path_or_buf='/media/james/ext4data1/current/projects/pfizer/combined-study/intersecting-features-index.csv')
+       
     return
     
 def HoldoutFeats():
