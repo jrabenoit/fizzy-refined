@@ -169,8 +169,7 @@ def OuterAndHoldoutFolds():
         holdout_test_ids= patients.index[holdout_ocv['test_indices'][i]]
         
         for j,k in zip(est.keys(), est.values()):
-            k.fit(X_train, y_train)
-            
+            k.fit(X_train, y_train)           
             predict_train= k.predict(X_train)
             train_scores= [1 if x==y else 0 for x,y in zip(y_train, predict_train)]            
             train_results['fold'].extend([i+1]*len(X_train))
