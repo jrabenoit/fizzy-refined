@@ -5,37 +5,12 @@ import os, scipy.stats
 import numpy as np
 
 def Misc():    
-    #Encode categorical variables as integers rather than using onehot or dummy variables- do on a column-by-column basis
+    
+    #VARIABLES
+    
+    #Encode a categorical variable as an integers (not onehot or dummy)
     demow['ETHNIC']=pd.Categorical(demow['ETHNIC']).codes
 
-    #pivots table
-    d60p= d60.pivot(index='PATIENT',columns='TESTS',values='VALN')
-
-    #drops duplicates if both column 1 AND column 2 have the same row value
-    lab=lab.drop_duplicates(subset=['PATIENT', 'LPARM'], keep='first')
-    
-    #Encodes variables
-    lab1['ETHNIC']=pd.Categorical(lab1['ETHNIC']).codes
-    
-    #pivot each column of lab to its own table (lab1, lab2, etc)
-    lab1= lab.pivot(index='PATIENT',columns='LPARM',values='LVALN')
-    
-    #relabels columns so join works
-    lab1.columns='lab1-'+lab1.columns
-    
-    #joins tables 
-
-    labs=lab1.join([lab2, lab3])
-
-    #Descriptive statistics: central tendency, dispersion and shape
-    df['HAMD Total'].describe()
-
-    #Returns vals in df1 that are also in df2
-    np.intersect1d(df1['PATIENT'],df2['PATIENT'])
-
-    #Returns vals in df1 that are NOT in df2
-    np.setdiff1d(df1['PATIENT'],df2['PATIENT'])
-    
     #Quick way to encode/binarize
     df.set_index('PATIENT')
     df['ones']=1
@@ -44,6 +19,35 @@ def Misc():
 
     #Recode a variable
     df['Severity of illness']=df['Severity of illness'].replace(to_replace='Borderline ill', value='Borderline mentally ill')
+
+    #PIVOTS & JOINS
+
+    #pivots table
+    d60p= d60.pivot(index='PATIENT',columns='TESTS',values='VALN')
+    
+    #pivot each column of 'lab' to its own table (lab1, lab2, etc)
+    lab1= lab.pivot(index='PATIENT',columns='LPARM',values='LVALN')
+    
+    #relabels columns so join works
+    lab1.columns='lab1-'+lab1.columns
+    
+    #joins tables 
+    labs=lab1.join([lab2, lab3])
+
+    #Returns vals in df1 that are ALSO in df2
+    np.intersect1d(df1['PATIENT'],df2['PATIENT'])
+
+    #Returns vals in df1 that are NOT in df2
+    np.setdiff1d(df1['PATIENT'],df2['PATIENT'])
+    
+
+    #MISC
+    
+    #Descriptive statistics: central tendency, dispersion and shape
+    df['HAMD Total'].describe()
+    
+    #drops duplicates if both column 1 AND column 2 have the same row value
+    lab=lab.drop_duplicates(subset=['PATIENT', 'LPARM'], keep='first')
 
     #Quick way to sample a class to even out classes
     a=df1.columns[0]
@@ -55,9 +59,6 @@ def Misc():
     df6=[df4, df5] 
     df7=pd.concat(df6)
     df8=df7.sort_index()
-
-    #Sampling from data to get the same subjects as labels
-    
 
     #Cgi ordered categories, -1 indicates NaN
     df=df.set_index('PATIENT')
@@ -144,11 +145,9 @@ def Misc():
     
     return
 
-
 def Labeler():
     hamd=pd.read_csv('/media/james/ext4data1/current/projects/pfizer/303-data/deid_hamd17a.csv')
     df['HAMD 1=REMIT']=np.where(df['HAMD-17 questions Total score derived']<=7, 1, 0)
-
             
     df.to_csv(path_or_buf='/media/james/ext4data1/current/projects/pfizer/combined-study/class-labels.csv', index_label='PATIENT')
         
