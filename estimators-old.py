@@ -101,7 +101,21 @@ def InnerFolds():
     
     return
 
-def OuterFolds():
+def OuterAndHoldoutFolds():
+    with open('/media/james/ext4data1/current/projects/pfizer/combined-study/ocvfeats.pickle','rb') as f: ocv=pickle.load(f)
+   
+    a=input('Click and drag labels file: ')
+    a=a.strip('\' ')
+    patients= pd.read_csv(a, encoding='utf-8').set_index('PATIENT')
+        
+    with open('/media/james/ext4data1/current/projects/pfizer/combined-study/holdoutocvfeats.pickle','rb') as f: holdout_ocv=pickle.load(f)
+    holdout_a=input('Click and drag holdout labels file: ')
+    holdout_a=holdout_a.strip('\' ')
+    holdout_patients= pd.read_csv(holdout_a, encoding='utf-8').set_index('PATIENT')    
+    
+    
+    folds= len(ocv['X_train'])
+
     rf= ensemble.RandomForestClassifier(max_features=10, max_depth=5, n_jobs=3, bootstrap=False)
     et= ensemble.ExtraTreesClassifier(max_features=10, max_depth=5, n_jobs=3, bootstrap=False)
     kn= neighbors.KNeighborsClassifier(n_neighbors=10, n_jobs=3, p=1)
@@ -114,54 +128,35 @@ def OuterFolds():
     bc= ensemble.BaggingClassifier(base_estimator=rf, n_jobs=3)
     vc= ensemble.VotingClassifier(estimators=[('ab', ab),('gb', gb),('bc', bc)], voting='soft')
     
-    estimators= {'randomforest': rf,
-                 'extratrees': et,
-                 'kneighbors': kn,
-                 'naivebayes': nb,
-                 'decisiontree': dt,
-                 'linearsvc': ls,
-                 'gboost': gb,
-                 'neuralnet': nn,
-                 'adaboost': ab,
-                 'voting': vc,
-                 'bagging': bc}
-                 
-    a=input('Click and drag POST FEATURE SELECTION DATA file here: ')
-    a=a.strip('\' ')
-    data=pd.read_csv(a, encoding='utf-8').set_index('PATIENT') 
-    
-    b=input('Click and drag LABELS file here: ')
-    b=b.strip('\' ')
-    labels=pd.read_csv(b, encoding='utf-8').set_index('PATIENT') 
-    
-    c=input('Click and drag OUTER CV file here: ')
-    c=c.strip('\' ')
-    with open(c, 'rb') as f: ocv= pickle.load(f)
-
-    results= {'estimator':[], 
-              'subjects':[], 
-              'labels':[], 
-              'predictions':[], 
-              'scores':[], 
-              'attempts':[]}   
+    est= {#'randomforest': rf,
+          #'extratrees': et,
+          #'kneighbors': kn,
+          #'naivebayes': nb,
+          #'decisiontree': dt
+          #'linearsvm': ls,
+          #'adaboost': ab
+          #'neuralnet': nn,
+          'voting': vc
+          #'bagging': bc
+          #'gboost': gb
+          }
    
     train_results= {'fold':[], 'estimator':[], 'subjects':[], 
                     'labels':[], 'predictions':[], 'scores':[], 
-                    'attempts':[]}
+                    'attempts':[]
+                    }
                     
     test_results= {'fold':[], 'estimator':[], 'subjects':[], 
                    'labels':[], 'predictions':[], 'scores':[], 
-                   'attempts':[]}
+                   'attempts':[]
+                   }
+    
+    holdout_test_results= {'fold':[], 'estimator':[], 'subjects':[], 
+                           'labels':[], 'predictions':[], 'scores':[], 
+                           'attempts':[]
+                           }
     
     for i in range(folds):
-        train_ids=pd.DataFrame(index=ocv['X_train'][i])
-        X_train= train_ids.join(data)
-        y_train= train_ids.join(labels)
-
-        test_ids=pd.DataFrame(index=ocv['X_test'][i])
-        X_test= test_ids.join(data)
-        y_test= test_ids.join(labels)
-        
         X_train= ocv['X_train'][i]
         X_test= ocv['X_test'][i]
         y_train= ocv['y_train'][i]
@@ -196,12 +191,23 @@ def OuterFolds():
             test_results['scores'].extend(test_scores)
             test_results['attempts'].extend([1]*len(X_test))
 
+            predict_holdout_test= k.predict(holdout_X_test)
+            holdout_test_scores= [1 if x==y else 0 for x,y in zip(holdout_y_test, predict_holdout_test)]         
+            holdout_test_results['fold'].extend([i+1]*len(holdout_X_test))
+            holdout_test_results['estimator'].extend([j]*len(holdout_X_test))
+            holdout_test_results['subjects'].extend(holdout_test_ids)
+            holdout_test_results['labels'].extend(holdout_y_test)
+            holdout_test_results['predictions'].extend(predict_holdout_test)
+            holdout_test_results['scores'].extend(holdout_test_scores)
+            holdout_test_results['attempts'].extend([1]*len(holdout_X_test))
+            
     train_df=pd.DataFrame.from_dict(train_results).set_index('subjects')
     test_df=pd.DataFrame.from_dict(test_results).set_index('subjects')
     holdout_test_df=pd.DataFrame.from_dict(holdout_test_results).set_index('subjects')
     
     train_df.to_csv(path_or_buf='/media/james/ext4data1/current/projects/pfizer/combined-study/outer_train_results.csv')
     test_df.to_csv(path_or_buf='/media/james/ext4data1/current/projects/pfizer/combined-study/outer_test_results.csv')
+    holdout_test_df.to_csv(path_or_buf='/media/james/ext4data1/current/projects/pfizer/combined-study/holdout_test_results.csv')
     
     print('TRAIN RESULT')
     trd= train_df.groupby('estimator').sum()
@@ -217,4 +223,93 @@ def OuterFolds():
     temax= tesum.idxmax(axis=1)
     print('\nBest test: {}\n'.format(temax))
     
+    print('HOLDOUT RESULT')
+    hod= holdout_test_df.groupby('estimator').sum()
+    hosum= (hod['scores']/hod['attempts'])*100
+    print(hosum)
+    homax= hosum.idxmax(axis=1)
+    print('\nBest test: {}\n'.format(homax))
+    
     return
+'''   
+def HoldoutFolds():
+    with open('/media/james/ext4data1/current/projects/pfizer/combined-study/ocvfeats.pickle','rb') as f: ocv=pickle.load(f)
+    with open('/media/james/ext4data1/current/projects/pfizer/combined-study/holdoutocvfeats.pickle','rb') as f: holdoutocv=pickle.load(f)
+    a=input('Click and drag labels file: ')
+    a=a.strip('\' ')
+    patients= pd.read_csv(a, encoding='utf-8').set_index('PATIENT')
+        
+    folds= len(ocv['X_train'])
+
+    rf= ensemble.RandomForestClassifier(max_features=10, max_depth=5, n_jobs=3, bootstrap=False)
+    et= ensemble.ExtraTreesClassifier(max_features=10, max_depth=5, n_jobs=3, bootstrap=False)
+    kn= neighbors.KNeighborsClassifier(n_neighbors=10, n_jobs=3, p=1)
+    nb= naive_bayes.GaussianNB()
+    dt= tree.DecisionTreeClassifier(max_features=10, max_depth=5, criterion='entropy')
+    ls= svm.LinearSVC(penalty='l1', dual=False)
+    gb= ensemble.GradientBoostingClassifier(loss='exponential', max_depth=2)
+    nn= neural_network.MLPClassifier(hidden_layer_sizes=(7,7,7), learning_rate_init=0.0001, max_iter=500)
+    ab= ensemble.AdaBoostClassifier()
+    bc= ensemble.BaggingClassifier(base_estimator=rf, n_jobs=3)
+    vc= ensemble.VotingClassifier(estimators=[('gb', gb),('kn', kn),('bc',bc)], voting='soft')
+    
+    ab= ensemble.AdaBoostClassifier()
+    vc= ensemble.VotingClassifier(estimators=[('ab', ab),('gb', gb),('bc', bc)], voting='soft')
+    bc= ensemble.BaggingClassifier(base_estimator=rf, n_jobs=3)
+    
+    est= {#'randomforest': rf,
+          #'extratrees': et,
+          #'kneighbors': kn,
+          #'naivebayes': nb,
+          #'decisiontree': dt
+          #'linearsvm': ls,
+          #'adaboost': ab
+          #'neuralnet': nn,
+          'voting': vc
+          #'bagging': bc
+          #'gboost': gb
+          }
+   
+    train_results= {'fold':[], 'estimator':[], 'subjects':[], 
+                    'labels':[], 'predictions':[], 'scores':[], 
+                    'attempts':[]
+                    }
+                    
+    test_results= {'fold':[], 'estimator':[], 'subjects':[], 
+                   'labels':[], 'predictions':[], 'scores':[], 
+                   'attempts':[]
+                   }
+    
+    for i in range(folds):
+        X_train= ocv['X_train'][i]
+        y_train= ocv['y_train'][i]
+        
+        X_test= holdoutocv['X_test'][i]
+        y_test= holdoutocv['y_test'][i]        
+        
+        test_ids= patients.index[holdoutocv['test_indices'][i]]
+        
+        for j,k in zip(est.keys(), est.values()):
+            k.fit(X_train, y_train)
+            predict_test= k.predict(X_test)
+            test_scores= [1 if x==y else 0 for x,y in zip(y_test, predict_test)]         
+            test_results['fold'].extend([i+1]*len(X_test))
+            test_results['estimator'].extend([j]*len(X_test))
+            test_results['subjects'].extend(test_ids)
+            test_results['labels'].extend(y_test)
+            test_results['predictions'].extend(predict_test)
+            test_results['scores'].extend(test_scores)
+            test_results['attempts'].extend([1]*len(X_test))
+
+    test_df=pd.DataFrame.from_dict(test_results).set_index('subjects')  
+
+    test_df.to_csv(path_or_buf='/media/james/ext4data1/current/projects/pfizer/combined-study/holdout_test_results.csv')
+
+    ted= test_df.groupby('estimator').sum()
+    tesum= (ted['scores']/ted['attempts'])*100
+    print(tesum)
+    pmax= tesum.idxmax(axis=1)
+    print('\nBest test: {}\n'.format(pmax))
+    
+    return
+'''
