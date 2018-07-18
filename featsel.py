@@ -15,46 +15,6 @@ import itertools
 #from collections import Counter
 #b=dict(Counter(a))
 
-def InnerFeats():
-    a=input('Click and drag DATA file here: ')
-    a=a.strip('\' ')
-    data=pd.read_csv(a, encoding='utf-8').set_index('PATIENT') 
-    
-    b=input('Click and drag LABELS file here: ')
-    b=b.strip('\' ')
-    labels=pd.read_csv(b, encoding='utf-8').set_index('PATIENT') 
-    
-    c=input('Click and drag INNER CV file here: ')
-    c=c.strip('\' ')
-    with open(c, 'rb') as f: inner_cv= pickle.load(f)
-    
-    folds= len(inner_cv['train'])
-    feats=[[0]]*folds
-    
-    for i in range(folds):        
-        subjects=pd.DataFrame(index=inner_cv['train'][i])
-        X= subjects.join(data)
-        y= subjects.join(labels)
-              
-        llic= SelectFromModel(LassoLarsIC(criterion='bic'))
-        llic.fit(X, y)
-        feats[i]=llic.get_support(indices=True)    
-    
-    foldgroup=[]
-    for i in range(0, len(feats), 5):
-        foldgroup.append(feats[i:i+5])
-    
-    for i in range(len(foldgroup)):
-        featlist= list(set.intersection(*map(set,foldgroup[i])))
-        featlist.sort()
-        
-        data_cut= data[data.columns[featlist]]
-        #going to get all subjects back out of this- split into train/test groups during estimators.
-        
-        data_cut.to_csv(path_or_buf='/media/james/ext4data1/current/projects/pfizer/combined-study/data-cut-to-feature-set-for-fold-'+str(i+1)+'.csv', index_label='PATIENT')
-        
-    return    
-
 def OuterFeats():
     a=input('Click and drag DATA file here: ')
     a=a.strip('\' ')
@@ -94,3 +54,60 @@ def OuterFeats():
     feature_csv.to_csv(path_or_buf='/media/james/ext4data1/current/projects/pfizer/combined-study/intersecting-features-index.csv')
        
     return
+
+def InnerFeats():
+    a=input('Click and drag DATA file here: ')
+    a=a.strip('\' ')
+    data=pd.read_csv(a, encoding='utf-8').set_index('PATIENT') 
+    
+    b=input('Click and drag LABELS file here: ')
+    b=b.strip('\' ')
+    labels=pd.read_csv(b, encoding='utf-8').set_index('PATIENT') 
+    
+    c=input('Click and drag SINGLE FOLD INNER CV file here: ')
+    c=c.strip('\' ')
+    with open(c, 'rb') as f: inner_cv= pickle.load(f)
+    
+    folds= len(inner_cv['train'])
+    thisfold=input('Which # fold is this? ')
+    feats=[[0]]*folds
+    
+    #This is correct because we are mimicking the entire L(.) procedure as if D-1 were D.
+    for i in range(folds):
+        subjects=pd.DataFrame(index=inner_cv['train'][i])
+        X= subjects.join(data)
+        y= subjects.join(labels)
+
+        llic= SelectFromModel(LassoLarsIC(criterion='bic'))
+        llic.fit(X,y)
+        feats[i]=llic.get_support(indices=True)
+    
+    featlist= list(set.intersection(*map(set,feats)))
+    featlist.sort()
+    feature_csv= pd.DataFrame(index=featlist, data= list(data.columns[featlist]))
+    feature_csv.index.name='Feature #'
+    feature_csv.columns=['Feature Name']
+
+    print(len(featlist))
+    
+    data_cut= data[data.columns[featlist]]
+        
+    data_cut.to_csv(path_or_buf='/media/james/ext4data1/current/projects/pfizer/combined-study/data-cut-to-feature-set-for-inner-fold-'+str(thisfold)+'.csv', index_label='PATIENT')
+    feature_csv.to_csv(path_or_buf='/media/james/ext4data1/current/projects/pfizer/combined-study/intersecting-features-index-for-inner-fold-'+str(thisfold)+'.csv')
+        
+    return    
+
+'''
+In case we need to re-integrate individual folds and run through them five at a time:
+
+    foldgroup=[]
+    for i in range(0, len(feats), 5):
+        foldgroup.append(feats[i:i+5])
+    
+    for i in range(len(foldgroup)):
+        featlist= list(set.intersection(*map(set,foldgroup[i])))
+        featlist.sort()
+        
+        data_cut= data[data.columns[featlist]]
+'''
+

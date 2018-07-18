@@ -34,7 +34,6 @@ def OuterCv():
     return
     
 def InnerCv():
-    #Set up as flat structure of 25 folds, 5 from each training fold
     a=input('Click and drag DATA file here: ')
     a=a.strip('\' ')
     data=pd.read_csv(a, encoding='utf-8').set_index('PATIENT') 
@@ -46,23 +45,23 @@ def InnerCv():
     a=input('Click and drag OUTER CV file here: ')
     a=a.strip('\' ')
     with open(a, 'rb') as f: outer_cv= pickle.load(f)
-
-    train, test= [],[]
-    inner_cv= {'train': [], 
-               'test': []}
         
     for i in range(len(outer_cv['train'])): 
         subjects=pd.DataFrame(index=outer_cv['train'][i])
         X= subjects.join(data)
         y= subjects.join(labels)
-        
+    
+        train, test= [],[]
+        inner_cv= {'train': [], 
+                   'test': []}
+    
         skf = StratifiedKFold(n_splits=5)   
         for train_index, test_index in skf.split(X,y):      
             train= X.index[train_index]
             test= X.index[test_index]
             inner_cv['train'].append(train)
             inner_cv['test'].append(test)
-        
-    with open('/media/james/ext4data1/current/projects/pfizer/combined-study/inner_cv.pickle', 'wb') as f: pickle.dump(inner_cv, f, pickle.HIGHEST_PROTOCOL) 
+            
+        with open('/media/james/ext4data1/current/projects/pfizer/combined-study/inner_cv_fold_'+str(i+1)+'.pickle', 'wb') as f: pickle.dump(inner_cv, f, pickle.HIGHEST_PROTOCOL) 
     
     return
