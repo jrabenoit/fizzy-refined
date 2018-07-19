@@ -36,11 +36,11 @@ def EntireDataset():
                  #'naivebayes': nb,
                  #'decisiontree': dt,
                  #'linearsvc': ls,
-                 'gboost': gb,
+                 #'gboost': gb,
                  #'neuralnet': nn,
                  #'adaboost': ab,
                  #'bagging': bc,
-                 #'voting': vc,
+                 'voting': vc,
                  }   
     
     results= {'estimator':[], 
