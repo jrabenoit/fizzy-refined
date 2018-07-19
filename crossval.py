@@ -6,7 +6,7 @@ import pandas as pd
 from sklearn.model_selection import StratifiedKFold
 
 def OuterCv():   
-    a=input('Click and drag DATA file here: ')
+    a=input('Click and drag ENTIRE DATASET file here: ')
     a=a.strip('\' ')
     data=pd.read_csv(a, encoding='utf-8').set_index('PATIENT') 
     
@@ -34,7 +34,7 @@ def OuterCv():
     return
     
 def InnerCv():
-    a=input('Click and drag DATA file here: ')
+    a=input('Click and drag ENTIRE DATASET file here: ')
     a=a.strip('\' ')
     data=pd.read_csv(a, encoding='utf-8').set_index('PATIENT') 
     

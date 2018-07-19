@@ -6,7 +6,7 @@ import copy, pickle
 from sklearn import svm, naive_bayes, neighbors, ensemble, linear_model, tree, neural_network
 
 def EntireDataset():
-    a=input('Click and drag POST FEATURE SELECTION DATA file here: ')
+    a=input('Click and drag FEATURE SELECTED ENTIRE DATASET file here: ')
     a=a.strip('\' ')
     data=pd.read_csv(a, encoding='utf-8').set_index('PATIENT') 
     
@@ -36,11 +36,11 @@ def EntireDataset():
                  #'naivebayes': nb,
                  #'decisiontree': dt,
                  #'linearsvc': ls,
-                 #'gboost': gb,
+                 'gboost': gb,
                  #'neuralnet': nn,
                  #'adaboost': ab,
-                 #'bagging': bc
-                 'voting': vc,
+                 #'bagging': bc,
+                 #'voting': vc,
                  }   
     
     results= {'estimator':[], 
@@ -74,7 +74,7 @@ def EntireDataset():
     return
 
 def HoldoutDataset():
-    a=input('Click and drag HOLDOUT POST FEATURE SELECTION DATA file here: ')
+    a=input('Click and drag HOLDOUT FEATURE SELECTED DATA file here: ')
     a=a.strip('\' ')
     data=pd.read_csv(a, encoding='utf-8').set_index('PATIENT') 
     
@@ -222,7 +222,7 @@ def OuterFolds():
 
 
 def InnerFolds():
-    a=input('Click and drag SINGLE FOLD DATA file here: ')
+    a=input('Click and drag FEATURE SELECTED SINGLE FOLD DATA file here: ')
     a=a.strip('\' ')
     data=pd.read_csv(a, encoding='utf-8').set_index('PATIENT') 
     

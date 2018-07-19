@@ -16,7 +16,7 @@ import itertools
 #b=dict(Counter(a))
 
 def OuterFeats():
-    a=input('Click and drag DATA file here: ')
+    a=input('Click and drag ENTIRE DATASET file here: ')
     a=a.strip('\' ')
     data=pd.read_csv(a, encoding='utf-8').set_index('PATIENT') 
     
@@ -56,7 +56,7 @@ def OuterFeats():
     return
 
 def InnerFeats():
-    a=input('Click and drag DATA file here: ')
+    a=input('Click and drag ENTIRE DATASET file here: ')
     a=a.strip('\' ')
     data=pd.read_csv(a, encoding='utf-8').set_index('PATIENT') 
     
@@ -97,6 +97,19 @@ def InnerFeats():
         
     return    
 
+def HoldoutCut():
+    a=input('Click and drag FEATURE SELECTED ENTIRE DATASET file here: ')
+    a=a.strip('\' ')
+    data=pd.read_csv(a, encoding='utf-8').set_index('PATIENT') 
+
+    b=input('Click and drag HOLDOUT DATA file here: ')
+    b=b.strip('\' ')
+    hdata=pd.read_csv(b, encoding='utf-8').set_index('PATIENT') 
+    
+    data_cut=hdata[data.columns]
+    
+    data_cut.to_csv(path_or_buf='/media/james/ext4data1/current/projects/pfizer/combined-study/holdout-data-cut-to-feature-set.csv', index_label='PATIENT')
+    
 '''
 In case we need to re-integrate individual folds and run through them five at a time:
 
