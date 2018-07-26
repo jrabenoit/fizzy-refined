@@ -330,7 +330,7 @@ def InnerFolds():
     return
 
 def InnerHoldout():     
-    a=input('Click and drag FEATURE SELECTED ENTIRE DATASET file here: ')
+    a=input('Click and drag FEATURE SELECTED SINGLE FOLD DATA file here: ')
     a=a.strip('\' ')
     data=pd.read_csv(a, encoding='utf-8').set_index('PATIENT') 
     
@@ -342,7 +342,7 @@ def InnerHoldout():
     c=c.strip('\' ')
     with open(c, 'rb') as f: outer_cv= pickle.load(f)
    
-    thisfold= input('Which fold is this? ')    
+    thisfold= int(input('Which fold is this? '))
     
     nfeatsmax= len(data.columns)
     nfeatsneural= round((nfeatsmax*2/3))
@@ -380,12 +380,12 @@ def InnerHoldout():
                    'labels':[], 'predictions':[], 'scores':[], 
                    'attempts':[]}
     
-    train_ids=pd.DataFrame(index=outer_cv['train'][thisfold])
+    train_ids=pd.DataFrame(index=outer_cv['train'][thisfold-1])
     X_train= train_ids.join(data)
     y_train_df= train_ids.join(labels)
     y_train= np.array(y_train_df[y_train_df.columns[0]])
         
-    test_ids=pd.DataFrame(index=outer_cv['test'][thisfold])
+    test_ids=pd.DataFrame(index=outer_cv['test'][thisfold-1])
     X_test= test_ids.join(data)
     y_test_df= test_ids.join(labels)
     y_test= np.array(y_test_df[y_test_df.columns[0]])
@@ -395,7 +395,7 @@ def InnerHoldout():
                       
         predict_train= k.predict(X_train)
         train_scores= [1 if x==y else 0 for x,y in zip(y_train, predict_train)]            
-        train_results['fold'].extend([i+1]*len(X_train))
+        train_results['fold'].extend([thisfold]*len(X_train))
         train_results['estimator'].extend([j]*len(X_train))
         train_results['subjects'].extend(train_ids.index)
         train_results['labels'].extend(y_train)
@@ -405,7 +405,7 @@ def InnerHoldout():
 
         predict_test= k.predict(X_test)
         test_scores= [1 if x==y else 0 for x,y in zip(y_test, predict_test)]         
-        test_results['fold'].extend([i+1]*len(X_test))
+        test_results['fold'].extend([thisfold]*len(X_test))
         test_results['estimator'].extend([j]*len(X_test))
         test_results['subjects'].extend(test_ids.index)
         test_results['labels'].extend(y_test)
