@@ -51,9 +51,10 @@ def InnerCv():
         X= subjects.join(data)
         y= subjects.join(labels)
     
-        train, test= [],[]
+        train, test, holdout= [],[],[]
         inner_cv= {'train': [], 
-                   'test': []}
+                   'test': [],
+                   'holdout':[]}
     
         skf = StratifiedKFold(n_splits=5)   
         for train_index, test_index in skf.split(X,y):      
