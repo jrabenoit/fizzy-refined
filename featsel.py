@@ -4,7 +4,7 @@ from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import SelectFromModel
 from sklearn.feature_selection import RFECV
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.linear_model import LassoLarsIC
+from sklearn.linear_model import LassoLarsIC, LassoCV
 import copy, pickle
 import numpy as np
 import pandas as pd

@@ -25,7 +25,7 @@ def EntireDataset():
     dt= tree.DecisionTreeClassifier(max_features=nfeatsmax, max_depth=5, criterion='entropy')
     ls= svm.LinearSVC(penalty='l1', dual=False)
     gb= ensemble.GradientBoostingClassifier(loss='exponential', max_depth=2)
-    nn= neural_network.MLPClassifier(hidden_layer_sizes=(nfeatsneural,nfeatsneural,nfeatsneural), learning_rate_init=0.0001, max_iter=500)
+    nn= neural_network.MLPClassifier(hidden_layer_sizes=(nfeatsneural,nfeatsneural,nfeatsneural,), learning_rate_init=0.0001, max_iter=500)
     ab= ensemble.AdaBoostClassifier()
     bc= ensemble.BaggingClassifier(base_estimator=rf)
     vc= ensemble.VotingClassifier(estimators=[('ab', ab),('gb', gb),('bc', bc)], voting='soft')
@@ -35,12 +35,12 @@ def EntireDataset():
                  #'kneighbors': kn,
                  #'naivebayes': nb,
                  #'decisiontree': dt,
-                 #'linearsvc': ls,
+                 'linearsvc': ls,
                  #'gboost': gb,
                  #'neuralnet': nn,
                  #'adaboost': ab,
                  #'bagging': bc,
-                 'voting': vc,
+                 #'voting': vc,
                  }   
     
     results= {'estimator':[], 
@@ -143,6 +143,9 @@ def OuterFolds():
     bc= ensemble.BaggingClassifier(base_estimator=rf)
     vc= ensemble.VotingClassifier(estimators=[('ab', ab),('gb', gb),('bc', bc)], voting='soft')
     
+    #We can just copypasta these with slightly different hyperparameters to make a nice set of tests that can all be run at once with a nice flat structure.
+    vc2=ensemble.VotingClassifier(estimators=[('ab', ab),('gb', gb),('bc', bc)], voting='hard')
+    
     estimators= {'randomforest': rf,
                  'extratrees': et,
                  'kneighbors': kn,
@@ -153,7 +156,8 @@ def OuterFolds():
                  'neuralnet': nn,
                  'adaboost': ab,
                  'bagging': bc,
-                 'voting': vc
+                 'voting: softball': vc,
+                 'voting 2: hardball': vc2,
                  }  
    
     train_results= {'fold':[], 'estimator':[], 'subjects':[], 

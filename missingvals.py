@@ -20,9 +20,8 @@ def Impute():
     del labels[labels.columns[0]] 
     
     data=labels.join(data)
-    #X= Imputer().fit_transform(data)
-    X= Imputer(strategy='median', axis=0).fit_transform(data)
-
+    X= Imputer().fit_transform(data)
+    
     mms= MinMaxScaler()
     X2= mms.fit_transform(X)
     X3=pd.DataFrame(data=X2, columns=data.columns, index=data.index)

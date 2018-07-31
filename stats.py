@@ -35,3 +35,6 @@ def Roc():
         
     return
     
+def HardPlace():
+
+    return

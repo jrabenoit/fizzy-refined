@@ -39,6 +39,9 @@ def Misc():
 
     #Returns vals in df1 that are NOT in df2
     np.setdiff1d(df1['PATIENT'],df2['PATIENT'])
+
+    #Remove a study's participants (e.g. if missing data)
+    dfs3=dfs2.drop(labels=df.index, errors='ignore')
     
 
     #MISC
@@ -188,7 +191,7 @@ def Homeopathy():
     return
 
 #>>>
-#NOW PIVOT/CUT/ENCODE THE TABLES DOWN MANUALLY
+#NOW /CUT/ENCODE THE TABLES DOWN MANUALLY
 #>>>
 
 def Binarizer():
