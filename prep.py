@@ -63,6 +63,14 @@ def Misc():
     df7=pd.concat(df6)
     df8=df7.sort_index()
 
+    #Using ~ to cut the holdout set out of the main set, or not using it to get just the holdout set on its own
+    holdout_labels=labels_df[data.index.isin(hdata.index)] 
+    labels_without_holdout=labels_df[~data.index.isin(hdata.index)] 
+
+    #Sample for holdout set at same frequency of labels as dataset
+    holdout=labels.groupby('Remit= 1').apply(pd.DataFrame.sample, frac=0.1).reset_index(level='Remit= 1', drop=True).sort_index()
+
+
     #Cgi ordered categories, -1 indicates NaN
     df=df.set_index('PATIENT')
     cat=['Normal, not at all ill',
