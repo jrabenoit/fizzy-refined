@@ -36,7 +36,9 @@ def OuterFeats():
         X= subjects.join(data)
         y= subjects.join(labels)
 
-        llic= SelectFromModel(LassoLarsIC(criterion='bic'))
+        llic= SelectFromModel(LassoLarsIC())
+        #llic= SelectFromModel(LassoLarsIC(criterion='bic'))
+        
         llic.fit(X,y)
         feats[i]=llic.get_support(indices=True)
     
@@ -50,8 +52,8 @@ def OuterFeats():
     
     data_cut= data[data.columns[featlist]]
      
-    data_cut.to_csv(path_or_buf='/media/james/ext4data1/current/projects/pfizer/combined-study/data-cut-to-feature-set.csv', index_label='PATIENT')
-    feature_csv.to_csv(path_or_buf='/media/james/ext4data1/current/projects/pfizer/combined-study/intersecting-features-index.csv')
+    data_cut.to_csv(path_or_buf='/media/james/ext4data/current/projects/pfizer/combined-study/data-cut-to-feature-set.csv', index_label='PATIENT')
+    feature_csv.to_csv(path_or_buf='/media/james/ext4data/current/projects/pfizer/combined-study/intersecting-features-index.csv')
        
     return
 
@@ -78,7 +80,8 @@ def InnerFeats():
         X= subjects.join(data)
         y= subjects.join(labels)
 
-        llic= SelectFromModel(LassoLarsIC(criterion='bic'))
+        #llic= SelectFromModel(LassoLarsIC(criterion='bic'))
+        llic= SelectFromModel(LassoLarsIC())
         llic.fit(X,y)
         feats[i]=llic.get_support(indices=True)
     
@@ -92,8 +95,8 @@ def InnerFeats():
     
     data_cut= data[data.columns[featlist]]
         
-    data_cut.to_csv(path_or_buf='/media/james/ext4data1/current/projects/pfizer/combined-study/data-cut-to-feature-set-for-inner-fold-'+str(thisfold)+'.csv', index_label='PATIENT')
-    feature_csv.to_csv(path_or_buf='/media/james/ext4data1/current/projects/pfizer/combined-study/intersecting-features-index-for-inner-fold-'+str(thisfold)+'.csv')
+    data_cut.to_csv(path_or_buf='/media/james/ext4data/current/projects/pfizer/combined-study/data-cut-to-feature-set-for-inner-fold-'+str(thisfold)+'.csv', index_label='PATIENT')
+    feature_csv.to_csv(path_or_buf='/media/james/ext4data/current/projects/pfizer/combined-study/intersecting-features-index-for-inner-fold-'+str(thisfold)+'.csv')
         
     return    
 
@@ -108,7 +111,7 @@ def HoldoutCut():
     
     data_cut=hdata[data.columns]
     
-    data_cut.to_csv(path_or_buf='/media/james/ext4data1/current/projects/pfizer/combined-study/holdout-data-cut-to-feature-set.csv', index_label='PATIENT')
+    data_cut.to_csv(path_or_buf='/media/james/ext4data/current/projects/pfizer/combined-study/holdout-data-cut-to-feature-set.csv', index_label='PATIENT')
     
 '''
 In case we need to re-integrate individual folds and run through them five at a time:

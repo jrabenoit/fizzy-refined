@@ -29,7 +29,7 @@ def OuterCv():
         outer_cv['train'].append(train)
         outer_cv['test'].append(test)
 
-    with open('/media/james/ext4data1/current/projects/pfizer/combined-study/outer_cv.pickle', 'wb') as f: pickle.dump(outer_cv, f, pickle.HIGHEST_PROTOCOL) 
+    with open('/media/james/ext4data/current/projects/pfizer/combined-study/outer_cv.pickle', 'wb') as f: pickle.dump(outer_cv, f, pickle.HIGHEST_PROTOCOL) 
 
     return
     
@@ -63,6 +63,6 @@ def InnerCv():
             inner_cv['train'].append(train)
             inner_cv['test'].append(test)
             
-        with open('/media/james/ext4data1/current/projects/pfizer/combined-study/inner_cv_fold_'+str(i+1)+'.pickle', 'wb') as f: pickle.dump(inner_cv, f, pickle.HIGHEST_PROTOCOL) 
+        with open('/media/james/ext4data/current/projects/pfizer/combined-study/inner_cv_fold_'+str(i+1)+'.pickle', 'wb') as f: pickle.dump(inner_cv, f, pickle.HIGHEST_PROTOCOL) 
     
     return

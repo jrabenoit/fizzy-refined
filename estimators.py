@@ -62,9 +62,9 @@ def EntireDataset():
         results['attempts'].extend([1]*len(data))
 
     results_df=pd.DataFrame.from_dict(results).set_index('subjects')    
-    results_df.to_csv(path_or_buf='/media/james/ext4data1/current/projects/pfizer/combined-study/entire_dataset_results.csv')
+    results_df.to_csv(path_or_buf='/media/james/ext4data/current/projects/pfizer/combined-study/entire_dataset_results.csv')
     
-    with open('/media/james/ext4data1/current/projects/pfizer/combined-study/trainedclassifier.pickle', 'wb') as f: pickle.dump(k, f, pickle.HIGHEST_PROTOCOL)
+    with open('/media/james/ext4data/current/projects/pfizer/combined-study/trainedclassifier.pickle', 'wb') as f: pickle.dump(k, f, pickle.HIGHEST_PROTOCOL)
      
     print('ENTIRE DATASET ACCURACY')
     trd= results_df.groupby('estimator').sum()
@@ -105,7 +105,7 @@ def HoldoutDataset():
     results['attempts'].extend([1]*len(data))
 
     results_df=pd.DataFrame.from_dict(results).set_index('subjects')    
-    results_df.to_csv(path_or_buf='/media/james/ext4data1/current/projects/pfizer/combined-study/holdout_dataset_results.csv')
+    results_df.to_csv(path_or_buf='/media/james/ext4data/current/projects/pfizer/combined-study/holdout_dataset_results.csv')
         
     print('HOLDOUT DATASET ACCURACY')
     trd= results_df.groupby('estimator').sum()
@@ -205,8 +205,8 @@ def OuterFolds():
     train_df=pd.DataFrame.from_dict(train_results).set_index('subjects')
     test_df=pd.DataFrame.from_dict(test_results).set_index('subjects')
     
-    train_df.to_csv(path_or_buf='/media/james/ext4data1/current/projects/pfizer/combined-study/outer_train_results.csv')
-    test_df.to_csv(path_or_buf='/media/james/ext4data1/current/projects/pfizer/combined-study/outer_test_results.csv')
+    train_df.to_csv(path_or_buf='/media/james/ext4data/current/projects/pfizer/combined-study/outer_train_results.csv')
+    test_df.to_csv(path_or_buf='/media/james/ext4data/current/projects/pfizer/combined-study/outer_test_results.csv')
     
     print('TRAIN RESULT')
     trd= train_df.groupby('estimator').sum()
@@ -313,8 +313,8 @@ def InnerFolds():
     train_df=pd.DataFrame.from_dict(train_results).set_index('subjects')
     test_df=pd.DataFrame.from_dict(test_results).set_index('subjects')
     
-    train_df.to_csv(path_or_buf='/media/james/ext4data1/current/projects/pfizer/combined-study/inner_train_results_fold_'+str(thisfold)+'.csv')
-    test_df.to_csv(path_or_buf='/media/james/ext4data1/current/projects/pfizer/combined-study/inner_test_results_fold_'+str(thisfold)+'.csv')
+    train_df.to_csv(path_or_buf='/media/james/ext4data/current/projects/pfizer/combined-study/inner_train_results_fold_'+str(thisfold)+'.csv')
+    test_df.to_csv(path_or_buf='/media/james/ext4data/current/projects/pfizer/combined-study/inner_test_results_fold_'+str(thisfold)+'.csv')
     
     
     print('TRAIN RESULT')
@@ -368,8 +368,8 @@ def InnerHoldout():
                  #'kneighbors': kn,
                  #'naivebayes': nb,
                  #'decisiontree': dt,
-                 #'linearsvc': ls,
-                 'gboost': gb,
+                 'linearsvc': ls,
+                 #'gboost': gb,
                  #'neuralnet': nn,
                  #'adaboost': ab,
                  #'bagging': bc,
@@ -420,19 +420,19 @@ def InnerHoldout():
     train_df=pd.DataFrame.from_dict(train_results).set_index('subjects')
     test_df=pd.DataFrame.from_dict(test_results).set_index('subjects')
     
-    train_df.to_csv(path_or_buf='/media/james/ext4data1/current/projects/pfizer/combined-study/inner_holdout_train_results_fold_'+str(thisfold)+'.csv')
-    test_df.to_csv(path_or_buf='/media/james/ext4data1/current/projects/pfizer/combined-study/inner_holdout_test_results_fold_'+str(thisfold)+'.csv')
+    train_df.to_csv(path_or_buf='/media/james/ext4data/current/projects/pfizer/combined-study/inner_holdout_train_results_fold_'+str(thisfold)+'.csv')
+    test_df.to_csv(path_or_buf='/media/james/ext4data/current/projects/pfizer/combined-study/inner_holdout_test_results_fold_'+str(thisfold)+'.csv')
     
-    with open('/media/james/ext4data1/current/projects/pfizer/combined-study/trainedclassifier_innerfold_'+str(thisfold)+'.pickle', 'wb') as f: pickle.dump(k, f, pickle.HIGHEST_PROTOCOL)
+    with open('/media/james/ext4data/current/projects/pfizer/combined-study/trainedclassifier_innerfold_'+str(thisfold)+'.pickle', 'wb') as f: pickle.dump(k, f, pickle.HIGHEST_PROTOCOL)
     
-    print('TRAIN RESULT')
+    print('D_-j RESULT')
     trd= train_df.groupby('estimator').sum()
     trsum= (trd['scores']/trd['attempts'])*100
     print(trsum)
     trmax= trsum.idxmax(axis=1)
     print('\nBest train: {}\n'.format(trmax))
 
-    print('TEST RESULT')
+    print('D_j (holdout for estimating model quality) RESULT')
     ted= test_df.groupby('estimator').sum()
     tesum= (ted['scores']/ted['attempts'])*100
     print(tesum)
