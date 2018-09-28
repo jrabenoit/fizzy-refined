@@ -142,10 +142,7 @@ def OuterFolds():
     ab= ensemble.AdaBoostClassifier()
     bc= ensemble.BaggingClassifier(base_estimator=rf)
     vc= ensemble.VotingClassifier(estimators=[('ab', ab),('gb', gb),('bc', bc)], voting='soft')
-    
-    #We can just copypasta these with slightly different hyperparameters to make a nice set of tests that can all be run at once with a nice flat structure.
-    vc2=ensemble.VotingClassifier(estimators=[('ab', ab),('gb', gb),('bc', bc)], voting='hard')
-    
+        
     estimators= {'randomforest': rf,
                  'extratrees': et,
                  'kneighbors': kn,
@@ -157,7 +154,6 @@ def OuterFolds():
                  'adaboost': ab,
                  'bagging': bc,
                  'voting: softball': vc,
-                 'voting 2: hardball': vc2,
                  }  
    
     train_results= {'fold':[], 'estimator':[], 'subjects':[], 
