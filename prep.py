@@ -3,6 +3,7 @@
 import pandas as pd
 import os, scipy.stats
 import numpy as np
+import pathlib
 
 def Misc():    
     
@@ -63,14 +64,22 @@ def Misc():
     df7=pd.concat(df6)
     df8=df7.sort_index()
 
-    #Using ~ to cut the holdout set out of the main set, or not using it to get just the holdout set on its own
-    holdout_labels=labels_df[data.index.isin(hdata.index)] 
-    labels_without_holdout=labels_df[~data.index.isin(hdata.index)] 
+
 
     #Sample for holdout set at same frequency of labels as dataset
-    holdout=labels.groupby('Remit= 1').apply(pd.DataFrame.sample, frac=0.1).reset_index(level='Remit= 1', drop=True).sort_index()
-
-
+    #Using ~ to cut the holdout set out of the main set, or not using it to get just the holdout set on its own
+    holdout=labels.groupby('HAM-D17 1=REMIT').apply(pd.DataFrame.sample, frac=0.1).reset_index(level='HAM-D17 1=REMIT', drop=True).sort_index()
+    
+    holdout_labels=labels[data.index.isin(holdout.index)].sort_index()
+    labels_excluding_holdout=labels[~data.index.isin(holdout.index)].sort_index()
+    holdout_data=data[data.index.isin(holdout.index)].sort_index() 
+    data_excluding_holdout=data[~data.index.isin(holdout.index)].sort_index()
+    
+    holdout_labels.to_csv(path_or_buf='/media/james/ext4data/current/projects/pfizer/refined-combined-study/holdout-labels.csv', index_label='PATIENT')
+    labels_excluding_holdout.to_csv(path_or_buf='/media/james/ext4data/current/projects/pfizer/refined-combined-study/labels_excluding_holdout.csv', index_label='PATIENT')
+    holdout_data.to_csv(path_or_buf='/media/james/ext4data/current/projects/pfizer/refined-combined-study/holdout-data.csv', index_label='PATIENT')
+    data_excluding_holdout.to_csv(path_or_buf='/media/james/ext4data/current/projects/pfizer/refined-combined-study/data_excluding_holdout.csv', index_label='PATIENT')
+    
     #Cgi ordered categories, -1 indicates NaN
     df=df.set_index('PATIENT')
     cat=['Normal, not at all ill',
@@ -240,4 +249,27 @@ def Harvester():
     
     return
 
-   
+def CombineStudies():
+    '''Combines all studies in a directory with the same column headers'''
+    
+    basedir=input('Click and drag DIRECTORY here: ')
+    root=basedir.strip('\' ')
+    dirname= os.path.basename(root)
+    
+    basefiles=[]
+    
+    for path, subdirs, files in os.walk(root):
+        for name in files:
+            fpath= os.path.join(path, name)
+            basefiles=basefiles+[fpath]
+    
+    combinedframe= pd.DataFrame()
+    
+    for i in basefiles:
+        print(i)
+        data=pd.read_csv(i, encoding='utf-8').set_index('PATIENT')
+        combinedframe=pd.concat([combinedframe,data])
+    
+    combinedframe.to_csv(path_or_buf='/media/james/ext4data/current/projects/pfizer/refined-combined-study/Data/'+dirname+'.csv')
+        
+

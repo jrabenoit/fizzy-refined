@@ -3,7 +3,7 @@
 import pandas as pd
 import os, scipy.stats
 import numpy as np
-from sklearn.preprocessing import Imputer
+from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import MinMaxScaler
 
 def Impute():
@@ -17,16 +17,15 @@ def Impute():
     
     data= data.dropna(axis='columns', how='all')
     
-    del labels[labels.columns[0]] 
     
-    data=labels.join(data)
-    X= Imputer().fit_transform(data)
+
+    X= SimpleImputer().fit_transform(data)
     
     mms= MinMaxScaler()
     X2= mms.fit_transform(X)
     X3=pd.DataFrame(data=X2, columns=data.columns, index=data.index)
     
-    X3.to_csv(path_or_buf='/media/james/ext4data1/current/projects/pfizer/combined-study/data.csv', index_label='PATIENT')
+    X3.to_csv(path_or_buf='/media/james/ext4data/current/projects/pfizer/refined-combined-study/data.csv', index_label='PATIENT')
     
     return
     

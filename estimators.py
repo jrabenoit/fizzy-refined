@@ -153,7 +153,7 @@ def OuterFolds():
                  'neuralnet': nn,
                  'adaboost': ab,
                  'bagging': bc,
-                 'voting: softball': vc,
+                 'voting': vc
                  }  
    
     train_results= {'fold':[], 'estimator':[], 'subjects':[], 
@@ -364,8 +364,8 @@ def InnerHoldout():
                  #'kneighbors': kn,
                  #'naivebayes': nb,
                  #'decisiontree': dt,
-                 'linearsvc': ls,
-                 #'gboost': gb,
+                 #'linearsvc': ls,
+                 'gboost': gb,
                  #'neuralnet': nn,
                  #'adaboost': ab,
                  #'bagging': bc,
