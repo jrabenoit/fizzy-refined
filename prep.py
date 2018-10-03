@@ -54,16 +54,18 @@ def Misc():
     lab=lab.drop_duplicates(subset=['PATIENT', 'LPARM'], keep='first')
 
     #Quick way to sample a class to even out classes
-    a=df1.columns[0]
-    b=df1[a].value_counts()
-    df2=df1.loc[df1[a]==0]
-    df3=df1.loc[df1[a]==1]
+    a=labels.columns[0]
+    b=labels[a].value_counts()
+    df2=labels.loc[labels[a]==0]
+    df3=labels.loc[labels[a]==1]
     df4=df2.sample(min(b))
     df5=df3.sample(min(b))
     df6=[df4, df5] 
     df7=pd.concat(df6)
     df8=df7.sort_index()
 
+    #Quick way to cut data to labels
+    data=data[data.index.isin(labels.index)].sort_index()
 
 
     #Sample for holdout set at same frequency of labels as dataset
