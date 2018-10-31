@@ -28,7 +28,7 @@ def EntireDataset():
     nn= neural_network.MLPClassifier(hidden_layer_sizes=(nfeatsneural,nfeatsneural,nfeatsneural,), learning_rate_init=0.0001, max_iter=500)
     ab= ensemble.AdaBoostClassifier()
     bc= ensemble.BaggingClassifier(base_estimator=rf)
-    vc= ensemble.VotingClassifier(estimators=[('ab', ab),('gb', gb),('bc', bc)], voting='soft')
+    vc= ensemble.VotingClassifier(estimators=[('gb', gb),('ab', ab),('bc', bc)], voting='soft')
     
     estimators= {#'randomforest': rf,
                  #'extratrees': et,
@@ -141,7 +141,8 @@ def OuterFolds():
     nn= neural_network.MLPClassifier(hidden_layer_sizes=(nfeatsneural,nfeatsneural,nfeatsneural), learning_rate_init=0.0001, max_iter=500)
     ab= ensemble.AdaBoostClassifier()
     bc= ensemble.BaggingClassifier(base_estimator=rf)
-    vc= ensemble.VotingClassifier(estimators=[('ab', ab),('gb', gb),('bc', bc)], voting='soft')
+    vc= ensemble.VotingClassifier(estimators=[('gb', gb),('ab', ab),('bc', bc)], voting='soft')
+    
         
     estimators= {'randomforest': rf,
                  'extratrees': et,
@@ -364,8 +365,8 @@ def InnerHoldout():
                  #'kneighbors': kn,
                  #'naivebayes': nb,
                  #'decisiontree': dt,
-                 #'linearsvc': ls,
-                 'gboost': gb,
+                 'linearsvc': ls,
+                 #'gboost': gb,
                  #'neuralnet': nn,
                  #'adaboost': ab,
                  #'bagging': bc,

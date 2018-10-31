@@ -43,6 +43,9 @@ def Bill():
     binner=np.digitize(distribution, np.array(range(0,101)))
     plt.plot([chance,chance],[0,list(binner).count(statistics.mode(binner))],'-r',lw=2)
     plt.hist(distribution, bins=list(range(0,101)))
+    plt.xlabel('% Accuracy')
+    plt.ylabel('Number of runs')
+    plt.title('Bootstrap sample distribution')
     plt.show()
     
     bdf.to_csv(path_or_buf='/media/james/ext4data1/current/projects/pfizer/refined-combined-study/bootstrap_results.csv')
