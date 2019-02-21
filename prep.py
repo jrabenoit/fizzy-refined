@@ -70,17 +70,19 @@ def Misc():
 
     #Sample for holdout set at same frequency of labels as dataset
     #Using ~ to cut the holdout set out of the main set, or not using it to get just the holdout set on its own
-    holdout=labels.groupby('HAM-D17 1=REMIT').apply(pd.DataFrame.sample, frac=0.1).reset_index(level='HAM-D17 1=REMIT', drop=True).sort_index()
+
+
+holdout=labels.groupby('HAM-D17 1=REMIT').apply(pd.DataFrame.sample, frac=0.1).reset_index(level='HAM-D17 1=REMIT', drop=True).sort_index()
     
-    holdout_labels=labels[data.index.isin(holdout.index)].sort_index()
-    labels_excluding_holdout=labels[~data.index.isin(holdout.index)].sort_index()
-    holdout_data=data[data.index.isin(holdout.index)].sort_index() 
-    data_excluding_holdout=data[~data.index.isin(holdout.index)].sort_index()
+holdout_labels=labels[data.index.isin(holdout.index)].sort_index()
+labels_excluding_holdout=labels[~data.index.isin(holdout.index)].sort_index()
+holdout_data=data[data.index.isin(holdout.index)].sort_index() 
+data_excluding_holdout=data[~data.index.isin(holdout.index)].sort_index()
     
-    holdout_labels.to_csv(path_or_buf='/media/james/ext4data/current/projects/pfizer/refined-combined-study/holdout-labels.csv', index_label='PATIENT')
-    labels_excluding_holdout.to_csv(path_or_buf='/media/james/ext4data/current/projects/pfizer/refined-combined-study/labels_excluding_holdout.csv', index_label='PATIENT')
-    holdout_data.to_csv(path_or_buf='/media/james/ext4data/current/projects/pfizer/refined-combined-study/holdout-data.csv', index_label='PATIENT')
-    data_excluding_holdout.to_csv(path_or_buf='/media/james/ext4data/current/projects/pfizer/refined-combined-study/data_excluding_holdout.csv', index_label='PATIENT')
+holdout_labels.to_csv(path_or_buf='/media/james/ext4data/current/projects/pfizer/refined-combined-study/holdout-labels.csv', index_label='PATIENT')
+labels_excluding_holdout.to_csv(path_or_buf='/media/james/ext4data/current/projects/pfizer/refined-combined-study/labels_excluding_holdout.csv', index_label='PATIENT')
+holdout_data.to_csv(path_or_buf='/media/james/ext4data/current/projects/pfizer/refined-combined-study/holdout-data.csv', index_label='PATIENT')
+data_excluding_holdout.to_csv(path_or_buf='/media/james/ext4data/current/projects/pfizer/refined-combined-study/data_excluding_holdout.csv', index_label='PATIENT')
     
     #Cgi ordered categories, -1 indicates NaN
     df=df.set_index('PATIENT')

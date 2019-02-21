@@ -45,8 +45,11 @@ def InnerCv():
     a=input('Click and drag OUTER CV file here: ')
     a=a.strip('\' ')
     with open(a, 'rb') as f: outer_cv= pickle.load(f)
-        
+
+    foldcount= 0    
     for i in range(len(outer_cv['train'])): 
+        foldcount= foldcount+1
+        
         subjects=pd.DataFrame(index=outer_cv['train'][i])
         X= subjects.join(data)
         y= subjects.join(labels)
@@ -63,6 +66,6 @@ def InnerCv():
             inner_cv['train'].append(train)
             inner_cv['test'].append(test)
             
-        with open('/media/james/ext4data/current/projects/pfizer/combined-study/inner_cv_fold_'+str(i+1)+'.pickle', 'wb') as f: pickle.dump(inner_cv, f, pickle.HIGHEST_PROTOCOL) 
+        with open('/media/james/ext4data/current/projects/pfizer/combined-study/inner_cv_fold_'+str(foldcount)+'.pickle', 'wb') as f: pickle.dump(inner_cv, f, pickle.HIGHEST_PROTOCOL) 
     
     return

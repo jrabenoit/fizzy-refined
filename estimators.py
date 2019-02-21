@@ -233,10 +233,10 @@ def InnerFolds():
     
     c=input('Click and drag SINGLE FOLD INNER CV file here: ')
     c=c.strip('\' ')
-    with open(c, 'rb') as f: outer_cv= pickle.load(f)
+    with open(c, 'rb') as f: inner_cv= pickle.load(f)
    
-    thisfold=input('Which fold is this? ')
-    folds= len(outer_cv['train'])    
+    thisfold= input('Which fold is this? ')
+    folds= len(inner_cv['train'])    
     nfeatsmax= len(data.columns)
     nfeatsneural= round((nfeatsmax*2/3))
     
@@ -274,12 +274,12 @@ def InnerFolds():
                    'attempts':[]}
     
     for i in range(folds):
-        train_ids=pd.DataFrame(index=outer_cv['train'][i])
+        train_ids=pd.DataFrame(index=inner_cv['train'][i])
         X_train= train_ids.join(data)
         y_train_df= train_ids.join(labels)
         y_train= np.array(y_train_df[y_train_df.columns[0]])
         
-        test_ids=pd.DataFrame(index=outer_cv['test'][i])
+        test_ids=pd.DataFrame(index=inner_cv['test'][i])
         X_test= test_ids.join(data)
         y_test_df= test_ids.join(labels)
         y_test= np.array(y_test_df[y_test_df.columns[0]])
@@ -341,7 +341,7 @@ def InnerHoldout():
     
     c=input('Click and drag OUTER CV file here: ')
     c=c.strip('\' ')
-    with open(c, 'rb') as f: outer_cv= pickle.load(f)
+    with open(c, 'rb') as f: inner_cv= pickle.load(f)
    
     thisfold= int(input('Which fold is this? '))
     
@@ -381,12 +381,12 @@ def InnerHoldout():
                    'labels':[], 'predictions':[], 'scores':[], 
                    'attempts':[]}
     
-    train_ids=pd.DataFrame(index=outer_cv['train'][thisfold-1])
+    train_ids=pd.DataFrame(index=inner_cv['train'][thisfold-1])
     X_train= train_ids.join(data)
     y_train_df= train_ids.join(labels)
     y_train= np.array(y_train_df[y_train_df.columns[0]])
         
-    test_ids=pd.DataFrame(index=outer_cv['test'][thisfold-1])
+    test_ids=pd.DataFrame(index=inner_cv['test'][thisfold-1])
     X_test= test_ids.join(data)
     y_test_df= test_ids.join(labels)
     y_test= np.array(y_test_df[y_test_df.columns[0]])
